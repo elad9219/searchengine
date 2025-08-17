@@ -1,32 +1,61 @@
 package com.handson.searchengine.model;
 
-public class CrawlStatus {
-    int distance;
-    long startTime;
-    StopReason stopReason;
-    long lastModified;
-    long numPages = 0;
-    long maxTime; // epoch millis when crawl must stop
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-    public static CrawlStatus of(int distance, long startTime, int numPages, StopReason stopReason, long maxTime) {
+public class CrawlStatus {
+    private int distance;
+    private long startTimeMillis;
+    private long lastModifiedMillis;
+    private StopReason stopReason;
+    private int numPages;
+
+    public static CrawlStatus of(int distance, long startTime, int numPages, StopReason stopReason) {
         CrawlStatus res = new CrawlStatus();
         res.distance = distance;
-        res.startTime = startTime;
-        res.lastModified = System.currentTimeMillis();
-        res.stopReason = stopReason;
+        res.startTimeMillis = startTime;
         res.numPages = numPages;
-        res.maxTime = maxTime;
+        res.lastModifiedMillis = startTime;
+        res.stopReason = stopReason;
         return res;
     }
 
-    public int getDistance() { return distance; }
-    public long getLastModified() { return lastModified; }
-    public long getStartTime() { return startTime; }
-    public StopReason getStopReason() { return stopReason; }
-    public long getNumPages() { return numPages; }
-    public long getMaxTime() { return maxTime; }
+    public int getDistance() {
+        return distance;
+    }
 
-    public void setNumPages(long numPages) { this.numPages = numPages; }
-    public void setLastModified(long lastModified) { this.lastModified = lastModified; }
-    public void setStopReason(StopReason stopReason) { this.stopReason = stopReason; }
+    public long getStartTimeMillis() {
+        return startTimeMillis;
+    }
+
+    public long getLastModifiedMillis() {
+        return lastModifiedMillis;
+    }
+
+    public StopReason getStopReason() {
+        return stopReason;
+    }
+
+    public int getNumPages() {
+        return numPages;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+
+    public void setStartTimeMillis(long startTimeMillis) {
+        this.startTimeMillis = startTimeMillis;
+    }
+
+    public void setLastModifiedMillis(long lastModifiedMillis) {
+        this.lastModifiedMillis = lastModifiedMillis;
+    }
+
+    public void setStopReason(StopReason stopReason) {
+        this.stopReason = stopReason;
+    }
+
+    public void setNumPages(int numPages) {
+        this.numPages = numPages;
+    }
 }

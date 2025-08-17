@@ -14,6 +14,10 @@ import java.net.URL;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * REST controller for crawl/search. Defensive: all endpoints return a valid response
+ * even if internals (redis / es) fail.
+ */
 @RestController
 @RequestMapping("/api")
 public class AppController {
@@ -30,12 +34,12 @@ public class AppController {
     @Autowired
     ElasticSearch elasticSearch;
 
-    // Start a crawl: returns crawlId (string) - unchanged contract for frontend compatibility
+    // Start a crawl: returns crawlId (string)
     @PostMapping("/crawl")
     public String crawl(@RequestBody CrawlerRequest request) throws IOException, InterruptedException {
         String crawlId = generateCrawlId();
 
-        // Normalize URL: ensure protocol and WWW
+        // Normalize URL: ensure protocol and WWW (best-effort)
         String u = request.getUrl();
         if (u == null) u = "";
         u = u.trim();
@@ -60,11 +64,12 @@ public class AppController {
         }
         request.setUrl(u);
 
-        // run crawler in background (existing behavior)
+        // run crawler in background
         new Thread(() -> {
             try {
                 crawler.crawl(crawlId, request);
             } catch (Exception e) {
+                // Log and swallow - controller already returned crawlId to client.
                 e.printStackTrace();
             }
         }).start();
@@ -72,10 +77,16 @@ public class AppController {
         return crawlId;
     }
 
-    // Get crawl status (returns CrawlStatusOut with millis fields)
+    // Get crawl status (returns CrawlStatusOut). Defensive: always returns a valid object.
     @GetMapping("/crawl/{crawlId}")
-    public CrawlStatusOut getCrawl(@PathVariable String crawlId) throws IOException, InterruptedException {
-        return crawler.getCrawlInfo(crawlId);
+    public CrawlStatusOut getCrawl(@PathVariable String crawlId) {
+        try {
+            return crawler.getCrawlInfo(crawlId);
+        } catch (Exception e) {
+            // If anything bad happens, return a default "empty" CrawlStatusOut so frontend can render.
+            e.printStackTrace();
+            return CrawlStatusOut.of(com.handson.searchengine.model.CrawlStatus.of(0, 0L, 0, null));
+        }
     }
 
     // Search endpoint: returns list of url + snippet (highlight) DTOs

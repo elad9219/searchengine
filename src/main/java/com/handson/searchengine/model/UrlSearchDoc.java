@@ -8,14 +8,17 @@ public class UrlSearchDoc {
     private String content;
     private int level;
     private String crawlId;
+    private String contentType; // הפרמטר הנוסף (לפי החתימה אצלך)
 
-    public static UrlSearchDoc of(String crawlId, String content, String url, String baseUrl, int level) {
+    // חתימה עם 6 פרמטרים – כמו שהקומפיילר שלך דרש
+    public static UrlSearchDoc of(String crawlId, String content, String url, String baseUrl, int level, String contentType) {
         UrlSearchDoc res = new UrlSearchDoc();
         res.crawlId = crawlId;
         res.url = url;
         res.baseUrl = baseUrl;
         res.content = content;
         res.level = level;
+        res.contentType = contentType;
         return res;
     }
 
@@ -27,6 +30,7 @@ public class UrlSearchDoc {
                 ", baseUrl='" + baseUrl + '\'' +
                 ", content='" + content + '\'' +
                 ", level=" + level +
+                ", contentType='" + contentType + '\'' +
                 '}';
     }
 
@@ -38,20 +42,17 @@ public class UrlSearchDoc {
         return level == that.level &&
                 Objects.equals(url, that.url) &&
                 Objects.equals(baseUrl, that.baseUrl) &&
-                Objects.equals(content, that.content);
+                Objects.equals(content, that.content) &&
+                Objects.equals(contentType, that.contentType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(url, baseUrl, content, level);
+        return Objects.hash(url, baseUrl, content, level, contentType);
     }
 
     public String getCrawlId() {
         return crawlId;
-    }
-
-    public void setCrawlId(String crawlId) {
-        this.crawlId = crawlId;
     }
 
     public String getUrl() {
@@ -68,5 +69,9 @@ public class UrlSearchDoc {
 
     public int getLevel() {
         return level;
+    }
+
+    public String getContentType() {
+        return contentType;
     }
 }

@@ -1,6 +1,5 @@
 package com.handson.searchengine.kafka;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.handson.searchengine.crawler.Crawler;
 import com.handson.searchengine.model.CrawlerRecord;
@@ -23,11 +22,9 @@ public class Consumer {
     @Autowired
     Crawler crawler;
 
-    @KafkaListener(topics = {APP_TOPIC})
+    @KafkaListener(topics = {APP_TOPIC}, concurrency = "5")
     public void listen(ConsumerRecord<?, ?> record) throws IOException, InterruptedException {
-
         Optional<?> kafkaMessage = Optional.ofNullable(record.value());
-
         if (kafkaMessage.isPresent()) {
             Object message = kafkaMessage.get();
             CrawlerRecord rec = om.readValue(message.toString(), CrawlerRecord.class);

@@ -1,61 +1,71 @@
 package com.handson.searchengine.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.handson.searchengine.util.Dates;
-import org.joda.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.util.Objects;
 
-import java.util.Date;
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CrawlStatusOut {
-    int distance;
-    long startTime; // epoch millis
-    StopReason stopReason;
-    long lastModified; // epoch millis
-    long numPages = 0;
-    long maxTime; // epoch millis
+    private int distance;
+    private long startTimeMillis;
+    private long lastModifiedMillis;
+    private String stopReason;
+    private int numPages;
 
     public static CrawlStatusOut of(CrawlStatus in) {
         CrawlStatusOut res = new CrawlStatusOut();
         res.distance = in.getDistance();
-        res.startTime = in.getStartTime();
-        res.lastModified = in.getLastModified();
-        res.stopReason = in.getStopReason();
+        res.startTimeMillis = in.getStartTimeMillis();
+        res.lastModifiedMillis = in.getLastModifiedMillis();
+        res.stopReason = (in.getStopReason() == null) ? null : in.getStopReason().toString();
         res.numPages = in.getNumPages();
-        res.maxTime = in.getMaxTime();
         return res;
     }
 
-    // Keep existing JSON formatted human-readable helpers
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonProperty("startTime")
-    public LocalDateTime calcStartTime() {
-        return Dates.atLocalTime(new Date(startTime));
+    public int getDistance() {
+        return distance;
     }
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonProperty("lastModified")
-    public LocalDateTime calcLastModified() {
-        return Dates.atLocalTime(new Date(lastModified));
+    public long getStartTimeMillis() {
+        return startTimeMillis;
     }
 
-    @JsonProperty("startTimeMillis")
-    public long getStartTimeMillis() { return startTime; }
+    public long getLastModifiedMillis() {
+        return lastModifiedMillis;
+    }
 
-    @JsonProperty("lastModifiedMillis")
-    public long getLastModifiedMillis() { return lastModified; }
+    public String getStopReason() {
+        return stopReason;
+    }
 
-    @JsonProperty("maxTimeMillis")
-    public long getMaxTimeMillis() { return maxTime; }
+    public int getNumPages() {
+        return numPages;
+    }
 
-    public int getDistance() { return distance; }
-    public StopReason getStopReason() { return stopReason; }
-    public long getNumPages() { return numPages; }
+    @Override
+    public String toString() {
+        return "CrawlStatusOut{" +
+                "distance=" + distance +
+                ", startTimeMillis=" + startTimeMillis +
+                ", lastModifiedMillis=" + lastModifiedMillis +
+                ", stopReason='" + stopReason + '\'' +
+                ", numPages=" + numPages +
+                '}';
+    }
 
-    public void setDistance(int distance) { this.distance = distance; }
-    public void setStartTime(long startTime) { this.startTime = startTime; }
-    public void setStopReason(StopReason stopReason) { this.stopReason = stopReason; }
-    public void setLastModified(long lastModified) { this.lastModified = lastModified; }
-    public void setNumPages(long numPages) { this.numPages = numPages; }
-    public void setMaxTime(long maxTime) { this.maxTime = maxTime; }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CrawlStatusOut that = (CrawlStatusOut) o;
+        return distance == that.distance &&
+                startTimeMillis == that.startTimeMillis &&
+                lastModifiedMillis == that.lastModifiedMillis &&
+                numPages == that.numPages &&
+                Objects.equals(stopReason, that.stopReason);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(distance, startTimeMillis, lastModifiedMillis, stopReason, numPages);
+    }
 }

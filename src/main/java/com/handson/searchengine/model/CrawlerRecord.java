@@ -10,17 +10,17 @@ public class CrawlerRecord {
     long maxTime;
     int maxUrls;
 
-    public static CrawlerRecord of(String crawlId, CrawlerRequest r) {
+    // משתמשים בגטרים של CrawlerRequest במקום גישה לשדות פרטיים
+    public static CrawlerRecord of(CrawlerRequest r) {
         long startTime = System.currentTimeMillis();
         CrawlerRecord res = new CrawlerRecord();
-        res.crawlId = crawlId;
-        res.baseUrl = r.url;
+        res.baseUrl = r.getUrl();
         res.url = r.getUrl();
         res.distance = 0;
         res.startTime = startTime;
-        res.maxTime = startTime + 1000L * r.maxSeconds;
-        res.maxDistance = r.maxDistance;
-        res.maxUrls = r.maxUrls;
+        res.maxTime = startTime + 1000L * r.getMaxSeconds();
+        res.maxDistance = r.getMaxDistance();
+        res.maxUrls = r.getMaxUrls();
         return res;
     }
 
@@ -36,11 +36,16 @@ public class CrawlerRecord {
         res.maxUrls = r.maxUrls;
         return res;
     }
+
+    public CrawlerRecord withCrawlId(String crawlId) {
+        this.crawlId = crawlId;
+        return this;
+    }
+
     public CrawlerRecord withUrl(String url) {
         this.url = url;
         return this;
     }
-
 
     public CrawlerRecord withIncDistance() {
         distance += 1;
