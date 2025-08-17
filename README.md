@@ -6,8 +6,8 @@ A full-stack web search engine built from scratch. It allows users to crawl webs
 
 * **Live Demo**: \[INSERT YOUR LIVE DEMO URL HERE\]  
 * **API Documentation (Swagger)**: \[INSERT YOUR SWAGGER URL HERE\]  
-* **Backend Repository**: \[INSERT YOUR GITHUB REPO URL HERE\]  
-* **Frontend Repository**: \[INSERT YOUR GITHUB REPO URL HERE\]
+* **Backend Repository**: [elad9219](https://github.com/elad9219/searchengine)  
+* **Frontend Repository**: [[elad9219](https://github.com/elad9219/searchengine)](https://github.com/elad9219/searchengine-frontend)
 
 ## **Table of Contents**
 
