@@ -5,20 +5,39 @@ import java.util.Objects;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CrawlStatusOut {
-    private int distance;
-    private long startTimeMillis;
-    private long lastModifiedMillis;
-    private String stopReason;
-    private int numPages;
+    private final int distance;
+    private final long startTimeMillis;
+    private final long lastModifiedMillis;
+    private final String stopReason;
+    private final String errorMessage;
+    private final int numPages;
+
+    private CrawlStatusOut(int distance, long startTimeMillis, long lastModifiedMillis, int numPages, String stopReason, String errorMessage) {
+        this.distance = distance;
+        this.startTimeMillis = startTimeMillis;
+        this.lastModifiedMillis = lastModifiedMillis;
+        this.numPages = numPages;
+        this.stopReason = stopReason;
+        this.errorMessage = errorMessage;
+    }
 
     public static CrawlStatusOut of(CrawlStatus in) {
-        CrawlStatusOut res = new CrawlStatusOut();
-        res.distance = in.getDistance();
-        res.startTimeMillis = in.getStartTimeMillis();
-        res.lastModifiedMillis = in.getLastModifiedMillis();
-        res.stopReason = (in.getStopReason() == null) ? null : in.getStopReason().toString();
-        res.numPages = in.getNumPages();
-        return res;
+        if (in == null) {
+            long now = System.currentTimeMillis();
+            return new CrawlStatusOut(0, now, now, 0, null, null);
+        }
+        return new CrawlStatusOut(
+                in.getDistance(),
+                in.getStartTimeMillis(),
+                in.getLastModifiedMillis(),
+                in.getNumPages(),
+                in.getStopReason() != null ? in.getStopReason().name() : null,
+                in.getErrorMessage()
+        );
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
     }
 
     public int getDistance() {
@@ -35,6 +54,10 @@ public class CrawlStatusOut {
 
     public String getStopReason() {
         return stopReason;
+    }
+
+    public StopReason getStopReasonAsEnum() {
+        return stopReason != null ? StopReason.valueOf(stopReason) : null;
     }
 
     public int getNumPages() {

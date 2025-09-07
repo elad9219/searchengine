@@ -7,16 +7,19 @@ public class CrawlStatus {
     private long startTimeMillis;
     private long lastModifiedMillis;
     private StopReason stopReason;
+    private String errorMessage;
     private int numPages;
 
+    public CrawlStatus(int distance, long startTime, int numPages, StopReason stopReason) {
+        this.distance = distance;
+        this.startTimeMillis = startTime;
+        this.numPages = numPages;
+        this.lastModifiedMillis = startTime;
+        this.stopReason = stopReason;
+    }
+
     public static CrawlStatus of(int distance, long startTime, int numPages, StopReason stopReason) {
-        CrawlStatus res = new CrawlStatus();
-        res.distance = distance;
-        res.startTimeMillis = startTime;
-        res.numPages = numPages;
-        res.lastModifiedMillis = startTime;
-        res.stopReason = stopReason;
-        return res;
+        return new CrawlStatus(distance, startTime, numPages, stopReason);
     }
 
     public int getDistance() {
@@ -57,5 +60,13 @@ public class CrawlStatus {
 
     public void setNumPages(int numPages) {
         this.numPages = numPages;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 }
