@@ -12,7 +12,11 @@ import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -20,6 +24,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,6 +45,12 @@ public class Crawler {
     protected final Log logger = LogFactory.getLog(getClass());
 
     private final ExecutorService indexExecutor = Executors.newFixedThreadPool(4);
+    private final AtomicBoolean isShuttingDown = new AtomicBoolean(false);
+
+    @PostConstruct
+    public void init() {
+        isShuttingDown.set(false); // Ensure clean state on startup
+    }
 
     public void crawl(String crawlId, CrawlerRequest crawlerRequest) throws InterruptedException, IOException, JsonProcessingException {
         logger.info("Starting crawl with ID: " + crawlId + " at " + new java.util.Date());
@@ -52,17 +63,20 @@ public class Crawler {
         logger.info("Preparing to send initial record for URL: " + first.getUrl() + " at " + new java.util.Date());
         producer.send(first);
         logger.info("Sent initial record for crawl ID: " + crawlId + " at " + new java.util.Date());
+    }
 
-        // Early termination check: if less than 3 pages visited within 5 seconds, report error
-        Thread.sleep(2000); // Wait 2 seconds to allow initial crawl to start
-        int visitedPages = getVisitedUrls(crawlId);
-        if (visitedPages < 3 && System.currentTimeMillis() - first.getStartTime() < 5000) {
-            updateCrawlStatusWithError(crawlId, "Early termination detected: Site may be inaccessible or restricted (visited " + visitedPages + " pages)");
-        }
+    @PostMapping("/stop/{crawlId}")
+    public void stopCrawlGracefully(@PathVariable String crawlId) {
+        stopCrawlGracefully(crawlId, "Manually stopped by user");
     }
 
     public void crawlOneRecord(String crawlId, CrawlerRecord rec) {
         logger.info("Consumer processing crawl for URL: " + rec.getUrl() + " with crawlId: " + crawlId + " at " + new java.util.Date());
+
+        if (isShuttingDown.get()) {
+            logger.info("Skipping crawl for " + rec.getUrl() + " due to shutdown request at " + new java.util.Date());
+            return;
+        }
 
         try {
             StopReason stopReason = getStopReason(rec);
@@ -222,11 +236,30 @@ public class Crawler {
             CrawlStatus current = readStatus(crawlId);
             if (current != null) {
                 current.setErrorMessage(errorMessage);
+                current.setStopReason(StopReason.userInitiated);
                 setCrawlStatus(crawlId, current);
-                logger.error("Crawl error for " + crawlId + ": " + errorMessage + " at " + new java.util.Date());
+                logger.info("Crawl stopped with user-initiated error for " + crawlId + ": " + errorMessage + " at " + new java.util.Date());
             }
         } catch (Exception e) {
             logger.error("Failed to update crawl status with error: " + e.getMessage() + " at " + new java.util.Date(), e);
+        }
+    }
+
+    public void stopCrawlGracefully(String crawlId, String stopReason) {
+        try {
+            isShuttingDown.set(true);
+            CrawlStatus current = readStatus(crawlId);
+            if (current != null) {
+                current.setStopReason(StopReason.userInitiated);
+                current.setErrorMessage(stopReason);
+                setCrawlStatus(crawlId, current);
+                // Clear the visited queue to stop processing pending messages
+                redisTemplate.delete(crawlId + ".visited");
+                logger.info("Gracefully stopping crawl " + crawlId + " with reason: " + stopReason + " at " + new java.util.Date());
+            }
+            // Allow existing tasks to complete
+        } catch (Exception e) {
+            logger.error("Failed to stop crawl gracefully: " + e.getMessage() + " at " + new java.util.Date(), e);
         }
     }
 
@@ -234,6 +267,7 @@ public class Crawler {
         if (rec.getDistance() == rec.getMaxDistance() + 1) return StopReason.maxDistance;
         if (getVisitedUrls(rec.getCrawlId()) >= rec.getMaxUrls()) return StopReason.maxUrls;
         if (System.currentTimeMillis() >= rec.getMaxTime()) return StopReason.timeout;
+        if (isShuttingDown.get()) return StopReason.userInitiated;
         return null;
     }
 
@@ -241,10 +275,10 @@ public class Crawler {
         logger.info("Adding URLs to queue: distance->" + distance + " amount->" + urls.size() + " at " + new java.util.Date());
         int currentVisited = getVisitedUrls(rec.getCrawlId());
         int remainingSlots = rec.getMaxUrls() - currentVisited;
-        if (remainingSlots <= 0 || System.currentTimeMillis() >= rec.getMaxTime()) return;
+        if (remainingSlots <= 0 || System.currentTimeMillis() >= rec.getMaxTime() || isShuttingDown.get()) return;
         List<String> urlsToAdd = urls.stream().limit(remainingSlots).collect(Collectors.toList());
         for (String url : urlsToAdd) {
-            if (System.currentTimeMillis() >= rec.getMaxTime()) break;
+            if (System.currentTimeMillis() >= rec.getMaxTime() || isShuttingDown.get()) break;
             if (!crawlHasVisited(rec, url)) {
                 producer.send(CrawlerRecord.of(rec).withUrl(url).withIncDistance());
             }
@@ -266,20 +300,34 @@ public class Crawler {
     }
 
     private void indexElasticSearchAsync(CrawlerRecord rec, Document webPageContent) {
+        if (isShuttingDown.get()) {
+            logger.info("Skipping indexing for " + rec.getUrl() + " due to shutdown at " + new java.util.Date());
+            return;
+        }
         logger.info("Scheduling Elasticsearch index for: " + rec.getUrl() + " at " + new java.util.Date());
         String text = webPageContent.body() != null ? webPageContent.body().text() : "";
         UrlSearchDoc searchDoc = UrlSearchDoc.of(rec.getCrawlId(), text, rec.getUrl(), rec.getBaseUrl(), rec.getDistance(), "html");
-        indexExecutor.submit(() -> {
-            try {
-                elasticSearch.addData(searchDoc);
-                logger.info("Indexed URL successfully: " + rec.getUrl() + " at " + new java.util.Date());
-            } catch (Exception e) {
-                logger.error("Failed to index doc async: " + rec.getUrl() + " - " + e.getMessage() + " at " + new java.util.Date(), e);
-            }
-        });
+        try {
+            indexExecutor.submit(() -> {
+                try {
+                    elasticSearch.addData(searchDoc);
+                    logger.info("Indexed URL successfully: " + rec.getUrl() + " at " + new java.util.Date());
+                } catch (Exception e) {
+                    logger.error("Failed to index doc async: " + rec.getUrl() + " - " + e.getMessage() + " at " + new java.util.Date(), e);
+                }
+            });
+        } catch (Exception e) {
+            logger.warn("Failed to submit indexing task for " + rec.getUrl() + ": " + e.getMessage() + " at " + new java.util.Date());
+        }
     }
 
     private void initCrawlInRedis(String crawlId) throws JsonProcessingException {
+        // Reset shutdown flag for new crawl
+        isShuttingDown.set(false);
+        // Clear previous crawl data
+        redisTemplate.delete(crawlId + ".status");
+        redisTemplate.delete(crawlId + ".urls.count");
+        redisTemplate.delete(crawlId + ".visited");
         long now = System.currentTimeMillis();
         setCrawlStatus(crawlId, CrawlStatus.of(0, now, 0, null));
         redisTemplate.opsForValue().set(crawlId + ".urls.count", "0");
@@ -358,7 +406,8 @@ public class Crawler {
     @PreDestroy
     public void shutdown() {
         try {
-            indexExecutor.shutdownNow();
+            isShuttingDown.set(true);
+            indexExecutor.shutdown();
             logger.info("Shutting down crawler executor service at " + new java.util.Date());
         } catch (Exception ignore) {}
     }

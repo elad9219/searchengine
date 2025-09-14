@@ -89,6 +89,19 @@ public class AppController {
         }
     }
 
+    // Stop a running crawl
+    @PostMapping("/crawl/{crawlId}/stop")
+    public void stopCrawl(@PathVariable String crawlId) {
+        try {
+            CrawlStatusOut status = crawler.getCrawlInfo(crawlId);
+            if (status != null && status.getStopReason() == null) {
+                crawler.stopCrawlGracefully(crawlId, "Manually stopped by user");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     // Search endpoint: returns list of url + snippet (highlight) DTOs
     @GetMapping("/search")
     public List<SearchResultDto> search(@RequestParam String query) throws IOException {
