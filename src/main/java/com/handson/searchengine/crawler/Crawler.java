@@ -264,8 +264,8 @@ public class Crawler {
     }
 
     private StopReason getStopReason(CrawlerRecord rec) {
-        if (rec.getDistance() == rec.getMaxDistance() + 1) return StopReason.maxDistance;
-        if (getVisitedUrls(rec.getCrawlId()) >= rec.getMaxUrls()) return StopReason.maxUrls;
+        if (rec.getMaxDistance() >= 0 && rec.getDistance() > rec.getMaxDistance()) return StopReason.maxDistance;
+        if (rec.getMaxUrls() > 0 && getVisitedUrls(rec.getCrawlId()) >= rec.getMaxUrls()) return StopReason.maxUrls;
         if (System.currentTimeMillis() >= rec.getMaxTime()) return StopReason.timeout;
         if (isShuttingDown.get()) return StopReason.userInitiated;
         return null;
@@ -274,7 +274,7 @@ public class Crawler {
     private void addUrlsToQueue(CrawlerRecord rec, List<String> urls, int distance) throws InterruptedException, JsonProcessingException {
         logger.info("Adding URLs to queue: distance->" + distance + " amount->" + urls.size() + " at " + new java.util.Date());
         int currentVisited = getVisitedUrls(rec.getCrawlId());
-        int remainingSlots = rec.getMaxUrls() - currentVisited;
+        int remainingSlots = rec.getMaxUrls() > 0 ? rec.getMaxUrls() - currentVisited : Integer.MAX_VALUE;
         if (remainingSlots <= 0 || System.currentTimeMillis() >= rec.getMaxTime() || isShuttingDown.get()) return;
         List<String> urlsToAdd = urls.stream().limit(remainingSlots).collect(Collectors.toList());
         for (String url : urlsToAdd) {
