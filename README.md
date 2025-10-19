@@ -43,11 +43,25 @@ A full-stack web search engine built from scratch. It allows users to crawl webs
 
 ## **Screenshots**
 
-\<\!-- Add your screenshots here. Example:
 
-### **Search Page**
+### **Crawl**
 
-### **Results Page**
+
+<img width="2560" height="1440" alt="image" src="https://github.com/user-attachments/assets/25b0c483-625a-4ac4-b0e2-1fe69a764770" />
+
+
+### **Advanced Crawl**
+
+
+<img width="2560" height="1440" alt="image" src="https://github.com/user-attachments/assets/b277150c-4b4b-42d0-a20e-8968bf36ed2f" />
+
+
+### **Search**
+
+
+<img width="2560" height="1440" alt="image" src="https://github.com/user-attachments/assets/3dbdac2b-77a8-4499-9ba5-db216aa24489" />
+
+
 
 \--\>
 
