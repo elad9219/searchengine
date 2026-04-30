@@ -4,7 +4,7 @@ A full-stack web search engine built from scratch. It allows users to crawl webs
 
 ## **Quick Links**
 
-- **Live Project**: [https://search.runmydocker-app.com/](https://search.runmydocker-app.com/)
+- **Live Project**: [https://esearchengine.vercel.app/](https://esearchengine.vercel.app/)
 - **Swagger UI**: [https://search.runmydocker-app.com/swagger-ui.html](https://search.runmydocker-app.com/swagger-ui.html)
 - **Backend Repository**: [https://github.com/elad9219/searchengine](https://github.com/elad9219/searchengine)
 - **Frontend Repository**: [https://github.com/elad9219/searchengine-frontend](https://github.com/elad9219/searchengine-frontend)
