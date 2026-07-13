@@ -1,0 +1,40 @@
+# ==========================================
+# KAFKA CONFIGURATION (Aiven Cloud Template)
+# ==========================================
+spring.kafka.bootstrap-servers=<YOUR_AIVEN_KAFKA_HOST>:<PORT>
+spring.kafka.properties.security.protocol=SASL_SSL
+spring.kafka.properties.sasl.mechanism=SCRAM-SHA-256
+spring.kafka.properties.sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username="<YOUR_USERNAME>" password="<YOUR_PASSWORD>";
+
+spring.kafka.properties.ssl.truststore.location=classpath:certs/ca.pem
+spring.kafka.properties.ssl.truststore.type=PEM
+
+# Kafka Producer Settings
+spring.kafka.producer.retries=0
+spring.kafka.producer.acks=1
+spring.kafka.producer.batch-size=16384
+spring.kafka.producer.key-serializer=org.apache.kafka.common.serialization.StringSerializer
+spring.kafka.producer.value-serializer=org.springframework.kafka.support.serializer.JsonSerializer
+
+# Kafka Consumer Settings
+spring.kafka.consumer.properties.group.id=searchengine
+spring.kafka.consumer.auto-offset-reset=earliest
+spring.kafka.consumer.key-deserializer=org.apache.kafka.common.serialization.StringDeserializer
+spring.kafka.consumer.value-deserializer=org.springframework.kafka.support.serializer.JsonDeserializer
+
+# ==========================================
+# REDIS CONFIGURATION (Upstash Cloud Template)
+# ==========================================
+spring.redis.host=<YOUR_UPSTASH_REDIS_HOST>
+spring.redis.port=<YOUR_UPSTASH_REDIS_PORT>
+spring.redis.password=<YOUR_UPSTASH_REDIS_PASSWORD>
+
+# ==========================================
+# ELASTICSEARCH CONFIGURATION (Aiven Cloud Template)
+# ==========================================
+elasticsearch.base.url=https://<USER>:<PASSWORD>@<YOUR_AIVEN_ES_HOST>:<PORT>
+elasticsearch.key=<USER>:<PASSWORD>
+elasticsearch.index=elad
+
+management.endpoints.web.exposure.include=health,info
+management.endpoint.health.show-details=always
