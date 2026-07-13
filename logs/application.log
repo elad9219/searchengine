@@ -1,0 +1,384 @@
+2025-08-26 16:04:24.060 [main] INFO  c.h.s.SearchengineApplication - Starting SearchengineApplication using Java 11.0.28 on h-MacBook-Air-sl-elad.local with PID 37871 (/Users/eladtennenboim/IdeaProjects/searchengine/target/classes started by eladtennenboim in /Users/eladtennenboim/IdeaProjects/searchengine)
+2025-08-26 16:04:24.069 [main] DEBUG c.h.s.SearchengineApplication - Running with Spring Boot v2.5.2, Spring v5.3.8
+2025-08-26 16:04:24.070 [main] INFO  c.h.s.SearchengineApplication - No active profile set, falling back to default profiles: default
+2025-08-26 16:04:26.237 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode!
+2025-08-26 16:04:26.240 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-08-26 16:04:26.282 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 25 ms. Found 0 Redis repository interfaces.
+2025-08-26 16:04:27.208 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port(s): 8080 (http)
+2025-08-26 16:04:27.220 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-08-26 16:04:27.221 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.48]
+2025-08-26 16:04:27.335 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-08-26 16:04:27.336 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 3177 ms
+2025-08-26 16:04:28.142 [main] INFO  c.h.searchengine.kafka.Producer - Initializing Kafka Producer...
+2025-08-26 16:04:28.145 [main] ERROR c.h.searchengine.kafka.Producer - Error initializing Kafka Producer
+java.lang.ClassCastException: class java.util.ArrayList cannot be cast to class java.lang.String (java.util.ArrayList and java.lang.String are in module java.base of loader 'bootstrap')
+	at com.handson.searchengine.kafka.Producer.logKafkaConfiguration(Producer.java:45)
+	at com.handson.searchengine.kafka.Producer.<init>(Producer.java:34)
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+	at org.springframework.beans.BeanUtils.instantiateClass(BeanUtils.java:212)
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:117)
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:311)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:296)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1354)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1204)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:564)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:524)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:333)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:208)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:276)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1380)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1300)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:657)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:640)
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:119)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:399)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1413)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:601)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:524)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:333)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:208)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:276)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1380)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1300)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:657)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:640)
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:119)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:399)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1413)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:601)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:524)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:333)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:208)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:944)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:918)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:583)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:145)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:434)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:338)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1343)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1332)
+	at com.handson.searchengine.SearchengineApplication.main(SearchengineApplication.java:10)
+2025-08-26 16:04:29.341 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 2 endpoint(s) beneath base path '/actuator'
+2025-08-26 16:04:29.605 [main] INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
+2025-08-26 16:04:31.340 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port(s): 8080 (http) with context path ''
+2025-08-26 16:04:31.343 [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Context refreshed
+2025-08-26 16:04:31.409 [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Found 1 custom documentation plugin(s)
+2025-08-26 16:04:31.428 [main] INFO  s.d.s.w.s.ApiListingReferenceScanner - Scanning for api listing references
+2025-08-26 16:04:31.783 [main] INFO  s.d.s.w.r.o.CachingOperationNameGenerator - Generating unique operation named: handleUsingGET_1
+2025-08-26 16:04:31.789 [main] INFO  s.d.s.w.r.o.CachingOperationNameGenerator - Generating unique operation named: handleUsingGET_2
+2025-08-26 16:04:31.836 [main] INFO  c.h.s.SearchengineApplication - Started SearchengineApplication in 8.932 seconds (JVM running for 9.778)
+2025-08-26 16:04:35.042 [org.springframework.kafka.KafkaListenerEndpointContainer#0-1-C-1] INFO  o.s.k.l.KafkaMessageListenerContainer - searchengine: partitions assigned: []
+2025-08-26 16:04:35.042 [org.springframework.kafka.KafkaListenerEndpointContainer#0-3-C-1] INFO  o.s.k.l.KafkaMessageListenerContainer - searchengine: partitions assigned: []
+2025-08-26 16:04:35.043 [org.springframework.kafka.KafkaListenerEndpointContainer#0-4-C-1] INFO  o.s.k.l.KafkaMessageListenerContainer - searchengine: partitions assigned: []
+2025-08-26 16:04:35.066 [org.springframework.kafka.KafkaListenerEndpointContainer#0-2-C-1] INFO  o.s.k.l.KafkaMessageListenerContainer - searchengine: partitions assigned: []
+2025-08-26 16:04:35.526 [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] INFO  o.s.k.l.KafkaMessageListenerContainer - searchengine: partitions assigned: [searchengine-0]
+2025-08-26 16:04:40.343 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-08-26 16:04:40.345 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-08-26 16:04:40.353 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 8 ms
+2025-08-26 16:24:40.363 [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] INFO  o.s.k.l.KafkaMessageListenerContainer - searchengine: partitions revoked: [searchengine-0]
+2025-08-26 16:24:40.493 [org.springframework.kafka.KafkaListenerEndpointContainer#0-3-C-1] INFO  o.s.k.l.KafkaMessageListenerContainer$ListenerConsumer - searchengine: Consumer stopped
+2025-08-26 16:24:40.496 [org.springframework.kafka.KafkaListenerEndpointContainer#0-1-C-1] INFO  o.s.k.l.KafkaMessageListenerContainer$ListenerConsumer - searchengine: Consumer stopped
+2025-08-26 16:24:40.499 [org.springframework.kafka.KafkaListenerEndpointContainer#0-2-C-1] INFO  o.s.k.l.KafkaMessageListenerContainer$ListenerConsumer - searchengine: Consumer stopped
+2025-08-26 16:24:40.500 [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] INFO  o.s.k.l.KafkaMessageListenerContainer$ListenerConsumer - searchengine: Consumer stopped
+2025-08-26 16:24:40.502 [org.springframework.kafka.KafkaListenerEndpointContainer#0-4-C-1] INFO  o.s.k.l.KafkaMessageListenerContainer$ListenerConsumer - searchengine: Consumer stopped
+2025-08-26 16:24:44.369 [main] INFO  c.h.s.SearchengineApplication - Starting SearchengineApplication using Java 11.0.28 on h-MacBook-Air-sl-elad.local with PID 42622 (/Users/eladtennenboim/IdeaProjects/searchengine/target/classes started by eladtennenboim in /Users/eladtennenboim/IdeaProjects/searchengine)
+2025-08-26 16:24:44.371 [main] DEBUG c.h.s.SearchengineApplication - Running with Spring Boot v2.5.2, Spring v5.3.8
+2025-08-26 16:24:44.372 [main] INFO  c.h.s.SearchengineApplication - No active profile set, falling back to default profiles: default
+2025-08-26 16:24:46.717 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode!
+2025-08-26 16:24:46.721 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-08-26 16:24:46.774 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 39 ms. Found 0 Redis repository interfaces.
+2025-08-26 16:24:47.764 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port(s): 8080 (http)
+2025-08-26 16:24:47.778 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-08-26 16:24:47.778 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.48]
+2025-08-26 16:24:47.932 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-08-26 16:24:47.933 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 3436 ms
+2025-08-26 16:24:48.989 [main] INFO  c.h.searchengine.kafka.Producer - Initializing Kafka Producer...
+2025-08-26 16:24:48.991 [main] INFO  c.h.searchengine.kafka.Producer - Bootstrap servers: node128.codingbc.com:9092
+2025-08-26 16:24:48.992 [main] INFO  c.h.searchengine.kafka.Producer - Default topic: Not set
+2025-08-26 16:24:48.992 [main] INFO  c.h.searchengine.kafka.Producer - Producer configuration: {retries=0, value.serializer=class org.springframework.kafka.support.serializer.JsonSerializer, acks=1, batch.size=16384, bootstrap.servers=[node128.codingbc.com:9092], internal.auto.downgrade.txn.commit=true, buffer.memory=33554432, key.serializer=class org.apache.kafka.common.serialization.StringSerializer, linger.ms=0}
+2025-08-26 16:24:50.553 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 2 endpoint(s) beneath base path '/actuator'
+2025-08-26 16:24:50.829 [main] INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
+2025-08-26 16:24:52.914 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port(s): 8080 (http) with context path ''
+2025-08-26 16:24:52.916 [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Context refreshed
+2025-08-26 16:24:52.929 [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Found 1 custom documentation plugin(s)
+2025-08-26 16:24:52.948 [main] INFO  s.d.s.w.s.ApiListingReferenceScanner - Scanning for api listing references
+2025-08-26 16:24:53.371 [main] INFO  s.d.s.w.r.o.CachingOperationNameGenerator - Generating unique operation named: handleUsingGET_1
+2025-08-26 16:24:53.379 [main] INFO  s.d.s.w.r.o.CachingOperationNameGenerator - Generating unique operation named: handleUsingGET_2
+2025-08-26 16:24:53.463 [main] INFO  c.h.s.SearchengineApplication - Started SearchengineApplication in 10.584 seconds (JVM running for 11.973)
+2025-08-26 16:24:56.619 [org.springframework.kafka.KafkaListenerEndpointContainer#0-1-C-1] INFO  o.s.k.l.KafkaMessageListenerContainer - searchengine: partitions assigned: []
+2025-08-26 16:24:56.620 [org.springframework.kafka.KafkaListenerEndpointContainer#0-4-C-1] INFO  o.s.k.l.KafkaMessageListenerContainer - searchengine: partitions assigned: []
+2025-08-26 16:24:56.620 [org.springframework.kafka.KafkaListenerEndpointContainer#0-2-C-1] INFO  o.s.k.l.KafkaMessageListenerContainer - searchengine: partitions assigned: []
+2025-08-26 16:24:56.627 [org.springframework.kafka.KafkaListenerEndpointContainer#0-3-C-1] INFO  o.s.k.l.KafkaMessageListenerContainer - searchengine: partitions assigned: []
+2025-08-26 16:24:57.069 [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] INFO  o.s.k.l.KafkaMessageListenerContainer - searchengine: partitions assigned: [searchengine-0]
+2025-08-26 16:25:19.142 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-08-26 16:25:19.143 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-08-26 16:25:19.153 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 10 ms
+2025-08-26 16:25:19.315 [Thread-6] INFO  c.h.searchengine.crawler.Crawler - Starting crawl with ID: WyC6Og
+2025-08-26 16:25:19.319 [Thread-6] INFO  c.h.searchengine.crawler.Crawler - Crawl request details - URL: https://www.aliexpress.com, Max Distance: 5, Max URLs: 5000, Max Seconds: 60
+2025-08-26 16:25:19.319 [Thread-6] INFO  c.h.searchengine.crawler.Crawler - Starting crawl WyC6Og for URL: https://www.aliexpress.com
+2025-08-26 16:25:19.344 [Thread-6] INFO  c.h.searchengine.crawler.Crawler - Starting to crawl - URL: https://www.aliexpress.com, Max Depth: 5, Max URLs: 5000, Max Duration: 60s
+2025-08-26 16:25:19.369 [Thread-6] INFO  c.h.searchengine.crawler.Crawler - Processing URL: https://www.aliexpress.com
+2025-08-26 16:25:19.374 [Thread-6] DEBUG c.h.searchengine.crawler.Crawler - Marking URL as in progress: https://www.aliexpress.com
+2025-08-26 16:25:20.234 [Thread-6] DEBUG c.h.searchengine.crawler.Crawler - Updating crawl status for URL: https://www.aliexpress.com
+2025-08-26 16:25:20.235 [Thread-6] DEBUG c.h.searchengine.crawler.Crawler - Processing URL: https://www.aliexpress.com
+2025-08-26 16:25:20.235 [Thread-6] DEBUG c.h.searchengine.crawler.Crawler - Checking if URL is accessible: https://www.aliexpress.com
+2025-08-26 16:25:20.236 [Thread-6] DEBUG c.h.searchengine.crawler.Crawler - Checking if URL is accessible: https://www.aliexpress.com
+2025-08-26 16:25:22.172 [Thread-6] DEBUG c.h.searchengine.crawler.Crawler - URL check - https://www.aliexpress.com - Status: 200
+2025-08-26 16:25:22.172 [Thread-6] DEBUG c.h.searchengine.crawler.Crawler - URL is accessible: https://www.aliexpress.com
+2025-08-26 16:25:22.173 [Thread-6] DEBUG c.h.searchengine.crawler.Crawler - Fetching URL (attempt 1/3): https://www.aliexpress.com
+2025-08-26 16:25:23.804 [Thread-6] DEBUG c.h.searchengine.crawler.Crawler - Successfully fetched URL (status 200): https://www.aliexpress.com
+2025-08-26 16:25:24.403 [Thread-6] INFO  c.h.searchengine.crawler.Crawler - >> scheduling elasticsearch index for webPage: https://www.aliexpress.com
+2025-08-26 16:25:24.479 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300000512/bundledeals2?disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide
+2025-08-26 16:25:24.482 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300000512/bundledeals2?disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide
+2025-08-26 16:25:24.482 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300000556/zqfheaepnj?disablenav=yes&pha_manifest=ssr&_immersivemode=truemode=true
+2025-08-26 16:25:24.483 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300000556/zqfheaepnj?disablenav=yes&pha_manifest=ssr&_immersivemode=truemode=true
+2025-08-26 16:25:24.483 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300000444/gsdwp3p6ac?disablenav=yes&pha_manifest=ssr&_immersivemode=true
+2025-08-26 16:25:24.483 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300000444/gsdwp3p6ac?disablenav=yes&pha_manifest=ssr&_immersivemode=true
+2025-08-26 16:25:24.483 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://inbusiness.aliexpress.com/app/super-buyer/want-shop/home
+2025-08-26 16:25:24.485 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://inbusiness.aliexpress.com/app/super-buyer/want-shop/home
+2025-08-26 16:25:24.485 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/p/calp-plus/index.html?osf=category_navigate_newtab2&queryfrom=kingkong&categorytab=home_%26_garden
+2025-08-26 16:25:24.486 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - contains tracking parameters: https://www.aliexpress.com/p/calp-plus/index.html?osf=category_navigate_newtab2&queryfrom=kingkong&categorytab=home_%26_garden
+2025-08-26 16:25:24.486 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/p/calp-plus/index.html?osf=category_navigate_newtab2&queryfrom=kingkong&categorytab=hair_extensions_%26_wigs
+2025-08-26 16:25:24.486 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/p/calp-plus/index.html?osf=category_navigate_newtab2&queryfrom=kingkong&categorytab=hair_extensions_%26_wigs
+2025-08-26 16:25:24.486 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/p/calp-plus/index.html?osf=category_navigate_newtab2&queryfrom=kingkong&categorytab=men%27s_clothing
+2025-08-26 16:25:24.488 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/p/calp-plus/index.html?osf=category_navigate_newtab2&queryfrom=kingkong&categorytab=men%27s_clothing
+2025-08-26 16:25:24.488 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/p/calp-plus/index.html?osf=category_navigate_newtab2&queryfrom=kingkong&categorytab=accessories
+2025-08-26 16:25:24.490 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/p/calp-plus/index.html?osf=category_navigate_newtab2&queryfrom=kingkong&categorytab=accessories
+2025-08-26 16:25:24.490 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/p/calp-plus/index.html?osf=category_navigate_newtab2&queryfrom=kingkong&categorytab=consumer_electronics
+2025-08-26 16:25:24.490 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/p/calp-plus/index.html?osf=category_navigate_newtab2&queryfrom=kingkong&categorytab=consumer_electronics
+2025-08-26 16:25:24.491 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/p/calp-plus/index.html?osf=category_navigate_newtab2&queryfrom=kingkong&categorytab=home_improvement_%26_lighting
+2025-08-26 16:25:24.491 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/p/calp-plus/index.html?osf=category_navigate_newtab2&queryfrom=kingkong&categorytab=home_improvement_%26_lighting
+2025-08-26 16:25:24.491 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/p/calp-plus/index.html?osf=category_navigate_newtab2&queryfrom=kingkong&categorytab=home_appliances
+2025-08-26 16:25:24.491 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/p/calp-plus/index.html?osf=category_navigate_newtab2&queryfrom=kingkong&categorytab=home_appliances
+2025-08-26 16:25:24.491 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/p/calp-plus/index.html?osf=category_navigate_newtab2&queryfrom=kingkong&categorytab=automotive_%26_motorcycle
+2025-08-26 16:25:24.492 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/p/calp-plus/index.html?osf=category_navigate_newtab2&queryfrom=kingkong&categorytab=automotive_%26_motorcycle
+2025-08-26 16:25:24.492 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300000544/global-pc-new1?disablenav=yes&pha_manifest=ssr&_immersivemode=true
+2025-08-26 16:25:24.492 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300000544/global-pc-new1?disablenav=yes&pha_manifest=ssr&_immersivemode=true
+2025-08-26 16:25:24.492 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300002644/wizaad2nhn?disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide
+2025-08-26 16:25:24.493 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300002644/wizaad2nhn?disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide
+2025-08-26 16:25:24.493 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300002644/wizaad2nhn?disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide&scm=1007.31960.458249.0&scm_id=1007.31960.458249.0&scm-url=1007.31960.458249.0&pvid=d40b24a6-0f58-4b8b-9954-7e2ef66103cc&productids=5000000181003899
+2025-08-26 16:25:24.493 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300002644/wizaad2nhn?disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide&scm=1007.31960.458249.0&scm_id=1007.31960.458249.0&scm-url=1007.31960.458249.0&pvid=d40b24a6-0f58-4b8b-9954-7e2ef66103cc&productids=5000000181003899
+2025-08-26 16:25:24.493 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300002644/wizaad2nhn?disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide&scm=1007.31960.458249.0&scm_id=1007.31960.458249.0&scm-url=1007.31960.458249.0&pvid=d40b24a6-0f58-4b8b-9954-7e2ef66103cc&productids=5000000181709588
+2025-08-26 16:25:24.494 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300002644/wizaad2nhn?disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide&scm=1007.31960.458249.0&scm_id=1007.31960.458249.0&scm-url=1007.31960.458249.0&pvid=d40b24a6-0f58-4b8b-9954-7e2ef66103cc&productids=5000000181709588
+2025-08-26 16:25:24.494 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300002644/wizaad2nhn?disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide&scm=1007.31960.458249.0&scm_id=1007.31960.458249.0&scm-url=1007.31960.458249.0&pvid=d40b24a6-0f58-4b8b-9954-7e2ef66103cc&productids=5000000180693206
+2025-08-26 16:25:24.495 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300002644/wizaad2nhn?disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide&scm=1007.31960.458249.0&scm_id=1007.31960.458249.0&scm-url=1007.31960.458249.0&pvid=d40b24a6-0f58-4b8b-9954-7e2ef66103cc&productids=5000000180693206
+2025-08-26 16:25:24.495 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300002644/7y6igffcyf?productids=1005006967633770&disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide&scm=1007.31960.458249.0&scm_id=1007.31960.458249.0&scm-url=1007.31960.458249.0&pvid=d40b24a6-0f58-4b8b-9954-7e2ef66103cc
+2025-08-26 16:25:24.496 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300002644/7y6igffcyf?productids=1005006967633770&disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide&scm=1007.31960.458249.0&scm_id=1007.31960.458249.0&scm-url=1007.31960.458249.0&pvid=d40b24a6-0f58-4b8b-9954-7e2ef66103cc
+2025-08-26 16:25:24.496 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300002644/wx3kpdkqsh?productids=1005006087712348&disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide&scm=1007.31960.458249.0&scm_id=1007.31960.458249.0&scm-url=1007.31960.458249.0&pvid=d40b24a6-0f58-4b8b-9954-7e2ef66103cc
+2025-08-26 16:25:24.496 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300002644/wx3kpdkqsh?productids=1005006087712348&disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide&scm=1007.31960.458249.0&scm_id=1007.31960.458249.0&scm-url=1007.31960.458249.0&pvid=d40b24a6-0f58-4b8b-9954-7e2ef66103cc
+2025-08-26 16:25:24.496 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300002644/wx3kpdkqsh?productids=1005007464905634&disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide&scm=1007.31960.458249.0&scm_id=1007.31960.458249.0&scm-url=1007.31960.458249.0&pvid=d40b24a6-0f58-4b8b-9954-7e2ef66103cc
+2025-08-26 16:25:24.497 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300002644/wx3kpdkqsh?productids=1005007464905634&disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide&scm=1007.31960.458249.0&scm_id=1007.31960.458249.0&scm-url=1007.31960.458249.0&pvid=d40b24a6-0f58-4b8b-9954-7e2ef66103cc
+2025-08-26 16:25:24.497 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300002644/wizaad2nhn?disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide
+2025-08-26 16:25:24.497 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300002644/wizaad2nhn?disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide
+2025-08-26 16:25:24.497 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300000544/global-pc-new1?disablenav=yes&pha_manifest=ssr&_immersivemode=true
+2025-08-26 16:25:24.497 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300000544/global-pc-new1?disablenav=yes&pha_manifest=ssr&_immersivemode=true
+2025-08-26 16:25:24.498 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300002644/wizaad2nhn?disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide
+2025-08-26 16:25:24.498 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300002644/wizaad2nhn?disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide
+2025-08-26 16:25:24.498 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300002644/wizaad2nhn?disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide&scm=1007.31960.458249.0&scm_id=1007.31960.458249.0&scm-url=1007.31960.458249.0&pvid=d40b24a6-0f58-4b8b-9954-7e2ef66103cc&productids=5000000181003899
+2025-08-26 16:25:24.498 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300002644/wizaad2nhn?disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide&scm=1007.31960.458249.0&scm_id=1007.31960.458249.0&scm-url=1007.31960.458249.0&pvid=d40b24a6-0f58-4b8b-9954-7e2ef66103cc&productids=5000000181003899
+2025-08-26 16:25:24.499 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300002644/wizaad2nhn?disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide&scm=1007.31960.458249.0&scm_id=1007.31960.458249.0&scm-url=1007.31960.458249.0&pvid=d40b24a6-0f58-4b8b-9954-7e2ef66103cc&productids=5000000181709588
+2025-08-26 16:25:24.500 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300002644/wizaad2nhn?disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide&scm=1007.31960.458249.0&scm_id=1007.31960.458249.0&scm-url=1007.31960.458249.0&pvid=d40b24a6-0f58-4b8b-9954-7e2ef66103cc&productids=5000000181709588
+2025-08-26 16:25:24.501 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300002644/wizaad2nhn?disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide&scm=1007.31960.458249.0&scm_id=1007.31960.458249.0&scm-url=1007.31960.458249.0&pvid=d40b24a6-0f58-4b8b-9954-7e2ef66103cc&productids=5000000180693206
+2025-08-26 16:25:24.502 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300002644/wizaad2nhn?disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide&scm=1007.31960.458249.0&scm_id=1007.31960.458249.0&scm-url=1007.31960.458249.0&pvid=d40b24a6-0f58-4b8b-9954-7e2ef66103cc&productids=5000000180693206
+2025-08-26 16:25:24.502 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300002644/7y6igffcyf?productids=1005006967633770&disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide&scm=1007.31960.458249.0&scm_id=1007.31960.458249.0&scm-url=1007.31960.458249.0&pvid=d40b24a6-0f58-4b8b-9954-7e2ef66103cc
+2025-08-26 16:25:24.503 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300002644/7y6igffcyf?productids=1005006967633770&disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide&scm=1007.31960.458249.0&scm_id=1007.31960.458249.0&scm-url=1007.31960.458249.0&pvid=d40b24a6-0f58-4b8b-9954-7e2ef66103cc
+2025-08-26 16:25:24.503 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300002644/wx3kpdkqsh?productids=1005006087712348&disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide&scm=1007.31960.458249.0&scm_id=1007.31960.458249.0&scm-url=1007.31960.458249.0&pvid=d40b24a6-0f58-4b8b-9954-7e2ef66103cc
+2025-08-26 16:25:24.504 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300002644/wx3kpdkqsh?productids=1005006087712348&disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide&scm=1007.31960.458249.0&scm_id=1007.31960.458249.0&scm-url=1007.31960.458249.0&pvid=d40b24a6-0f58-4b8b-9954-7e2ef66103cc
+2025-08-26 16:25:24.504 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300002644/wx3kpdkqsh?productids=1005007464905634&disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide&scm=1007.31960.458249.0&scm_id=1007.31960.458249.0&scm-url=1007.31960.458249.0&pvid=d40b24a6-0f58-4b8b-9954-7e2ef66103cc
+2025-08-26 16:25:24.504 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300002644/wx3kpdkqsh?productids=1005007464905634&disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide&scm=1007.31960.458249.0&scm_id=1007.31960.458249.0&scm-url=1007.31960.458249.0&pvid=d40b24a6-0f58-4b8b-9954-7e2ef66103cc
+2025-08-26 16:25:24.506 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300002644/wizaad2nhn?disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide
+2025-08-26 16:25:24.507 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300002644/wizaad2nhn?disablenav=yes&pha_manifest=ssr&_immersivemode=true&businesscode=guide
+2025-08-26 16:25:24.507 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300000544/global-pc-new1?disablenav=yes&pha_manifest=ssr&_immersivemode=true
+2025-08-26 16:25:24.508 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300000544/global-pc-new1?disablenav=yes&pha_manifest=ssr&_immersivemode=true
+2025-08-26 16:25:24.508 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300000512/bundledeals2?disablenav=yes&pha_manifest=ssr&_immersivemode=true
+2025-08-26 16:25:24.508 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300000512/bundledeals2?disablenav=yes&pha_manifest=ssr&_immersivemode=true
+2025-08-26 16:25:24.508 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300000444/gsdwp3p6ac?disablenav=yes&pha_manifest=ssr&_immersivemode=true
+2025-08-26 16:25:24.508 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300000444/gsdwp3p6ac?disablenav=yes&pha_manifest=ssr&_immersivemode=true
+2025-08-26 16:25:24.509 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300001505/rekz8fmwjy?disablenav=yes&pha_manifest=ssr&_immersivemode=true
+2025-08-26 16:25:24.510 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300001505/rekz8fmwjy?disablenav=yes&pha_manifest=ssr&_immersivemode=true
+2025-08-26 16:25:24.510 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300001365/viva3?disablenav=yes&pha_manifest=ssr&_immersivemode=true&uuid=5621079380
+2025-08-26 16:25:24.511 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300001365/viva3?disablenav=yes&pha_manifest=ssr&_immersivemode=true&uuid=5621079380
+2025-08-26 16:25:24.511 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300001365/viva3?productids=1005008576982717&disablenav=yes&pha_manifest=ssr&_immersivemode=true&uuid=5621079380&scm=1007.44007.425735.0&scm_id=1007.44007.425735.0&scm-url=1007.44007.425735.0&pvid=406f0185-3288-4c42-854b-318dd27cf989&utparam=%257b%2522process_id%2522%253a%2522ace-homepage%2522%252c%2522x_object_type%2522%253a%2522product%2522%252c%2522pvid%2522%253a%2522406f0185-3288-4c42-854b-318dd27cf989%2522%252c%2522belongs%2522%253a%255b%257b%2522id%2522%253a%252235352489%2522%252c%2522type%2522%253a%2522dataset%2522%257d%255d%252c%2522pagesize%2522%253a%252220%2522%252c%2522language%2522%253a%2522iw%2522%252c%2522scm%2522%253a%25221007.44007.425735.0%2522%252c%2522countryid%2522%253a%2522il%2522%252c%2522scene%2522%253a%2522topselection-waterfall%2522%252c%2522x_object_id%2522%253a%25221005008576982717%2522%257d&pinpids=1005008576982717%3a12000045799509255
+2025-08-26 16:25:24.512 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300001365/viva3?productids=1005008576982717&disablenav=yes&pha_manifest=ssr&_immersivemode=true&uuid=5621079380&scm=1007.44007.425735.0&scm_id=1007.44007.425735.0&scm-url=1007.44007.425735.0&pvid=406f0185-3288-4c42-854b-318dd27cf989&utparam=%257b%2522process_id%2522%253a%2522ace-homepage%2522%252c%2522x_object_type%2522%253a%2522product%2522%252c%2522pvid%2522%253a%2522406f0185-3288-4c42-854b-318dd27cf989%2522%252c%2522belongs%2522%253a%255b%257b%2522id%2522%253a%252235352489%2522%252c%2522type%2522%253a%2522dataset%2522%257d%255d%252c%2522pagesize%2522%253a%252220%2522%252c%2522language%2522%253a%2522iw%2522%252c%2522scm%2522%253a%25221007.44007.425735.0%2522%252c%2522countryid%2522%253a%2522il%2522%252c%2522scene%2522%253a%2522topselection-waterfall%2522%252c%2522x_object_id%2522%253a%25221005008576982717%2522%257d&pinpids=1005008576982717%3a12000045799509255
+2025-08-26 16:25:24.513 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300001365/viva3?productids=1005009732297555&disablenav=yes&pha_manifest=ssr&_immersivemode=true&uuid=5621079380&scm=1007.44007.425735.0&scm_id=1007.44007.425735.0&scm-url=1007.44007.425735.0&pvid=406f0185-3288-4c42-854b-318dd27cf989&utparam=%257b%2522process_id%2522%253a%2522ace-homepage%2522%252c%2522x_object_type%2522%253a%2522product%2522%252c%2522pvid%2522%253a%2522406f0185-3288-4c42-854b-318dd27cf989%2522%252c%2522belongs%2522%253a%255b%257b%2522id%2522%253a%252235352489%2522%252c%2522type%2522%253a%2522dataset%2522%257d%255d%252c%2522pagesize%2522%253a%252220%2522%252c%2522language%2522%253a%2522iw%2522%252c%2522scm%2522%253a%25221007.44007.425735.0%2522%252c%2522countryid%2522%253a%2522il%2522%252c%2522scene%2522%253a%2522topselection-waterfall%2522%252c%2522x_object_id%2522%253a%25221005008576982717%2522%257d&pinpids=1005009732297555%3a12000050264220482
+2025-08-26 16:25:24.514 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300001365/viva3?productids=1005009732297555&disablenav=yes&pha_manifest=ssr&_immersivemode=true&uuid=5621079380&scm=1007.44007.425735.0&scm_id=1007.44007.425735.0&scm-url=1007.44007.425735.0&pvid=406f0185-3288-4c42-854b-318dd27cf989&utparam=%257b%2522process_id%2522%253a%2522ace-homepage%2522%252c%2522x_object_type%2522%253a%2522product%2522%252c%2522pvid%2522%253a%2522406f0185-3288-4c42-854b-318dd27cf989%2522%252c%2522belongs%2522%253a%255b%257b%2522id%2522%253a%252235352489%2522%252c%2522type%2522%253a%2522dataset%2522%257d%255d%252c%2522pagesize%2522%253a%252220%2522%252c%2522language%2522%253a%2522iw%2522%252c%2522scm%2522%253a%25221007.44007.425735.0%2522%252c%2522countryid%2522%253a%2522il%2522%252c%2522scene%2522%253a%2522topselection-waterfall%2522%252c%2522x_object_id%2522%253a%25221005008576982717%2522%257d&pinpids=1005009732297555%3a12000050264220482
+2025-08-26 16:25:24.515 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300001365/viva3?productids=1005009462163356&disablenav=yes&pha_manifest=ssr&_immersivemode=true&uuid=5621079380&scm=1007.44007.425735.0&scm_id=1007.44007.425735.0&scm-url=1007.44007.425735.0&pvid=406f0185-3288-4c42-854b-318dd27cf989&utparam=%257b%2522process_id%2522%253a%2522ace-homepage%2522%252c%2522x_object_type%2522%253a%2522product%2522%252c%2522pvid%2522%253a%2522406f0185-3288-4c42-854b-318dd27cf989%2522%252c%2522belongs%2522%253a%255b%257b%2522id%2522%253a%252235352489%2522%252c%2522type%2522%253a%2522dataset%2522%257d%255d%252c%2522pagesize%2522%253a%252220%2522%252c%2522language%2522%253a%2522iw%2522%252c%2522scm%2522%253a%25221007.44007.425735.0%2522%252c%2522countryid%2522%253a%2522il%2522%252c%2522scene%2522%253a%2522topselection-waterfall%2522%252c%2522x_object_id%2522%253a%25221005008576982717%2522%257d&pinpids=1005009462163356%3a12000049182997521
+2025-08-26 16:25:24.517 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300001365/viva3?productids=1005009462163356&disablenav=yes&pha_manifest=ssr&_immersivemode=true&uuid=5621079380&scm=1007.44007.425735.0&scm_id=1007.44007.425735.0&scm-url=1007.44007.425735.0&pvid=406f0185-3288-4c42-854b-318dd27cf989&utparam=%257b%2522process_id%2522%253a%2522ace-homepage%2522%252c%2522x_object_type%2522%253a%2522product%2522%252c%2522pvid%2522%253a%2522406f0185-3288-4c42-854b-318dd27cf989%2522%252c%2522belongs%2522%253a%255b%257b%2522id%2522%253a%252235352489%2522%252c%2522type%2522%253a%2522dataset%2522%257d%255d%252c%2522pagesize%2522%253a%252220%2522%252c%2522language%2522%253a%2522iw%2522%252c%2522scm%2522%253a%25221007.44007.425735.0%2522%252c%2522countryid%2522%253a%2522il%2522%252c%2522scene%2522%253a%2522topselection-waterfall%2522%252c%2522x_object_id%2522%253a%25221005008576982717%2522%257d&pinpids=1005009462163356%3a12000049182997521
+2025-08-26 16:25:24.518 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/p/calp-plus/index.html?osf=category_navigate_newtab2&queryfrom=kingkong&categorytab=home_%26_garden
+2025-08-26 16:25:24.518 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - contains tracking parameters: https://www.aliexpress.com/p/calp-plus/index.html?osf=category_navigate_newtab2&queryfrom=kingkong&categorytab=home_%26_garden
+2025-08-26 16:25:24.518 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/p/calp-plus/index.html?osf=category_navigate_newtab2&queryfrom=kingkong&categorytab=hair_extensions_%26_wigs
+2025-08-26 16:25:24.518 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/p/calp-plus/index.html?osf=category_navigate_newtab2&queryfrom=kingkong&categorytab=hair_extensions_%26_wigs
+2025-08-26 16:25:24.518 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/p/calp-plus/index.html?osf=category_navigate_newtab2&queryfrom=kingkong&categorytab=men%27s_clothing
+2025-08-26 16:25:24.518 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/p/calp-plus/index.html?osf=category_navigate_newtab2&queryfrom=kingkong&categorytab=men%27s_clothing
+2025-08-26 16:25:24.518 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/p/calp-plus/index.html?osf=category_navigate_newtab2&queryfrom=kingkong&categorytab=accessories
+2025-08-26 16:25:24.519 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/p/calp-plus/index.html?osf=category_navigate_newtab2&queryfrom=kingkong&categorytab=accessories
+2025-08-26 16:25:24.519 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/p/calp-plus/index.html?osf=category_navigate_newtab2&queryfrom=kingkong&categorytab=consumer_electronics
+2025-08-26 16:25:24.519 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/p/calp-plus/index.html?osf=category_navigate_newtab2&queryfrom=kingkong&categorytab=consumer_electronics
+2025-08-26 16:25:24.519 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/p/calp-plus/index.html?osf=category_navigate_newtab2&queryfrom=kingkong&categorytab=home_improvement_%26_lighting
+2025-08-26 16:25:24.519 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/p/calp-plus/index.html?osf=category_navigate_newtab2&queryfrom=kingkong&categorytab=home_improvement_%26_lighting
+2025-08-26 16:25:24.519 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://so.aliexpress.com/s/byrcmn?language=iw_il
+2025-08-26 16:25:24.519 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://so.aliexpress.com/s/byrcmn?language=iw_il
+2025-08-26 16:25:24.519 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: http://rule.alibaba.com/rule/detail/2054.htm
+2025-08-26 16:25:24.519 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: http://rule.alibaba.com/rule/detail/2054.htm
+2025-08-26 16:25:24.519 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://terms.alicdn.com/legal-agreement/terms/suit_bu1_aliexpress/suit_bu1_aliexpress202109291856_35940.html
+2025-08-26 16:25:24.520 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://terms.alicdn.com/legal-agreement/terms/suit_bu1_aliexpress/suit_bu1_aliexpress202109291856_35940.html
+2025-08-26 16:25:24.523 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.surveymonkey.com/r/?sm=9z9qykod%2fenxroeawlxcout4dfptfy7tgg0vxoc6xnq%3d
+2025-08-26 16:25:24.523 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.surveymonkey.com/r/?sm=9z9qykod%2fenxroeawlxcout4dfptfy7tgg0vxoc6xnq%3d
+2025-08-26 16:25:24.523 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://customerservice.aliexpress.com/category?categoryid=21038565&hcappid=1248&hcfromcode=xn2tk1tb7&hcsessionid=26-1248-f9fd78be-1f15-436b-b08c-22cb1cc5a53b
+2025-08-26 16:25:24.523 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://customerservice.aliexpress.com/category?categoryid=21038565&hcappid=1248&hcfromcode=xn2tk1tb7&hcsessionid=26-1248-f9fd78be-1f15-436b-b08c-22cb1cc5a53b
+2025-08-26 16:25:24.523 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://customerservice.aliexpress.com/category?categoryid=21037513&hcappid=1248&hcfromcode=xn2tk1tb7&hcsessionid=26-1248-c80e752a-3387-40f3-ba39-243131970887
+2025-08-26 16:25:24.523 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://customerservice.aliexpress.com/category?categoryid=21037513&hcappid=1248&hcfromcode=xn2tk1tb7&hcsessionid=26-1248-c80e752a-3387-40f3-ba39-243131970887
+2025-08-26 16:25:24.523 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://sale.aliexpress.com/v8yr8f629d.htm
+2025-08-26 16:25:24.523 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://sale.aliexpress.com/v8yr8f629d.htm
+2025-08-26 16:25:24.523 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: http://portals.aliexpress.com/
+2025-08-26 16:25:24.524 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: http://portals.aliexpress.com/
+2025-08-26 16:25:24.524 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://ds.aliexpress.com/
+2025-08-26 16:25:24.524 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://ds.aliexpress.com/
+2025-08-26 16:25:24.524 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://login.aliexpress.com/seller.htm?return_url=https://gsp.aliexpress.com
+2025-08-26 16:25:24.524 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - excluded path: https://login.aliexpress.com/seller.htm?return_url=https://gsp.aliexpress.com
+2025-08-26 16:25:24.524 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://sell.aliexpress.com/zh/__pc/newsellerlanding.htm
+2025-08-26 16:25:24.524 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://sell.aliexpress.com/zh/__pc/newsellerlanding.htm
+2025-08-26 16:25:24.524 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://seller.aliexpress.com
+2025-08-26 16:25:24.524 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://seller.aliexpress.com
+2025-08-26 16:25:24.524 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/p/wallet-ui-follow/payment-partner.html
+2025-08-26 16:25:24.525 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/p/wallet-ui-follow/payment-partner.html
+2025-08-26 16:25:24.525 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.facebook.com/aliexpress
+2025-08-26 16:25:24.525 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.facebook.com/aliexpress
+2025-08-26 16:25:24.525 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://twitter.com/aliexpress_en
+2025-08-26 16:25:24.525 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://twitter.com/aliexpress_en
+2025-08-26 16:25:24.525 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.instagram.com/aliexpress
+2025-08-26 16:25:24.525 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.instagram.com/aliexpress
+2025-08-26 16:25:24.525 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://m.me/aliexpress
+2025-08-26 16:25:24.525 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://m.me/aliexpress
+2025-08-26 16:25:24.525 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://wa.me/8657186563839
+2025-08-26 16:25:24.525 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://wa.me/8657186563839
+2025-08-26 16:25:24.526 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://so.aliexpress.com/s/byrcmn?language=iw_il
+2025-08-26 16:25:24.526 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://so.aliexpress.com/s/byrcmn?language=iw_il
+2025-08-26 16:25:24.526 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://report.aliexpress.com
+2025-08-26 16:25:24.526 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://report.aliexpress.com
+2025-08-26 16:25:24.526 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/ssr/300000437/pinktadpeb?disablenav=yes&pha_manifest=ssr&_immersivemode=true
+2025-08-26 16:25:24.526 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/ssr/300000437/pinktadpeb?disablenav=yes&pha_manifest=ssr&_immersivemode=true
+2025-08-26 16:25:24.527 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://ipp.aidcgroup.net/#/ipphome
+2025-08-26 16:25:24.528 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://ipp.aidcgroup.net/#/ipphome
+2025-08-26 16:25:24.529 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/p/transparencycenter/dsa.html
+2025-08-26 16:25:24.529 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/p/transparencycenter/dsa.html
+2025-08-26 16:25:24.529 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://aidc.jubao.alibaba.com
+2025-08-26 16:25:24.529 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://aidc.jubao.alibaba.com
+2025-08-26 16:25:24.529 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/p/transparencycenter/index.html
+2025-08-26 16:25:24.529 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/p/transparencycenter/index.html
+2025-08-26 16:25:24.530 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://m.aliexpress.com/p/complaint-center/index.html#/complaint/report
+2025-08-26 16:25:24.530 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://m.aliexpress.com/p/complaint-center/index.html#/complaint/report
+2025-08-26 16:25:24.530 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://helpcenter.aliexpress.com/s/buyerhelp/knowledge?categoryid=1000110454&language=en_us&m_station=buyerhelp&questionid=1061297473&regulation=us-product-recall
+2025-08-26 16:25:24.531 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://helpcenter.aliexpress.com/s/buyerhelp/knowledge?categoryid=1000110454&language=en_us&m_station=buyerhelp&questionid=1061297473&regulation=us-product-recall
+2025-08-26 16:25:24.531 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://ru.aliexpress.com
+2025-08-26 16:25:24.531 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://ru.aliexpress.com
+2025-08-26 16:25:24.531 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://pt.aliexpress.com
+2025-08-26 16:25:24.531 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://pt.aliexpress.com
+2025-08-26 16:25:24.531 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://es.aliexpress.com
+2025-08-26 16:25:24.531 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://es.aliexpress.com
+2025-08-26 16:25:24.531 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://fr.aliexpress.com
+2025-08-26 16:25:24.531 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://fr.aliexpress.com
+2025-08-26 16:25:24.531 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://de.aliexpress.com
+2025-08-26 16:25:24.531 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://de.aliexpress.com
+2025-08-26 16:25:24.532 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://it.aliexpress.com
+2025-08-26 16:25:24.533 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://it.aliexpress.com
+2025-08-26 16:25:24.534 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://nl.aliexpress.com
+2025-08-26 16:25:24.534 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://nl.aliexpress.com
+2025-08-26 16:25:24.534 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://tr.aliexpress.com
+2025-08-26 16:25:24.534 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://tr.aliexpress.com
+2025-08-26 16:25:24.535 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://ja.aliexpress.com
+2025-08-26 16:25:24.537 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://ja.aliexpress.com
+2025-08-26 16:25:24.538 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://ko.aliexpress.com
+2025-08-26 16:25:24.538 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://ko.aliexpress.com
+2025-08-26 16:25:24.538 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://th.aliexpress.com
+2025-08-26 16:25:24.538 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://th.aliexpress.com
+2025-08-26 16:25:24.538 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://vi.aliexpress.com
+2025-08-26 16:25:24.538 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://vi.aliexpress.com
+2025-08-26 16:25:24.538 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://ar.aliexpress.com
+2025-08-26 16:25:24.538 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://ar.aliexpress.com
+2025-08-26 16:25:24.538 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://he.aliexpress.com
+2025-08-26 16:25:24.539 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://he.aliexpress.com
+2025-08-26 16:25:24.539 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://pl.aliexpress.com
+2025-08-26 16:25:24.539 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://pl.aliexpress.com
+2025-08-26 16:25:24.539 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://he.aliexpress.com/popular.html
+2025-08-26 16:25:24.539 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://he.aliexpress.com/popular.html
+2025-08-26 16:25:24.539 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://he.aliexpress.com/wholesale.html
+2025-08-26 16:25:24.539 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://he.aliexpress.com/wholesale.html
+2025-08-26 16:25:24.539 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://he.aliexpress.com/promotion.html
+2025-08-26 16:25:24.539 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://he.aliexpress.com/promotion.html
+2025-08-26 16:25:24.539 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://he.aliexpress.com/price.html
+2025-08-26 16:25:24.539 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://he.aliexpress.com/price.html
+2025-08-26 16:25:24.539 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://he.aliexpress.com/cheap.html
+2025-08-26 16:25:24.539 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://he.aliexpress.com/cheap.html
+2025-08-26 16:25:24.539 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://he.aliexpress.com/reviews.html
+2025-08-26 16:25:24.540 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://he.aliexpress.com/reviews.html
+2025-08-26 16:25:24.540 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: http://www.alibabagroup.com/en/global/home
+2025-08-26 16:25:24.540 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: http://www.alibabagroup.com/en/global/home
+2025-08-26 16:25:24.540 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/
+2025-08-26 16:25:24.540 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/
+2025-08-26 16:25:24.540 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: http://www.alimama.com/
+2025-08-26 16:25:24.540 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: http://www.alimama.com/
+2025-08-26 16:25:24.540 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://intl.alipay.com/index.htm
+2025-08-26 16:25:24.540 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://intl.alipay.com/index.htm
+2025-08-26 16:25:24.540 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: http://www.fliggy.com/
+2025-08-26 16:25:24.540 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: http://www.fliggy.com/
+2025-08-26 16:25:24.540 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: http://www.alibabacloud.com
+2025-08-26 16:25:24.540 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: http://www.alibabacloud.com
+2025-08-26 16:25:24.540 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: http://www.alibaba.com/
+2025-08-26 16:25:24.540 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: http://www.alibaba.com/
+2025-08-26 16:25:24.540 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: http://aliqin.tmall.com/
+2025-08-26 16:25:24.540 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: http://aliqin.tmall.com/
+2025-08-26 16:25:24.541 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: http://www.dingtalk.com/
+2025-08-26 16:25:24.541 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: http://www.dingtalk.com/
+2025-08-26 16:25:24.541 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: http://ju.taobao.com/
+2025-08-26 16:25:24.541 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: http://ju.taobao.com/
+2025-08-26 16:25:24.541 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: http://www.taobao.com/
+2025-08-26 16:25:24.541 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: http://www.taobao.com/
+2025-08-26 16:25:24.541 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: http://www.tmall.com/
+2025-08-26 16:25:24.541 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: http://www.tmall.com/
+2025-08-26 16:25:24.541 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://world.taobao.com/
+2025-08-26 16:25:24.541 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://world.taobao.com/
+2025-08-26 16:25:24.541 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: http://www.alios.cn/
+2025-08-26 16:25:24.541 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: http://www.alios.cn/
+2025-08-26 16:25:24.541 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: http://www.1688.com/
+2025-08-26 16:25:24.542 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: http://www.1688.com/
+2025-08-26 16:25:24.542 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://play.google.com/store/apps/details?id=com.alibaba.aliexpresshd
+2025-08-26 16:25:24.542 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://play.google.com/store/apps/details?id=com.alibaba.aliexpresshd
+2025-08-26 16:25:24.542 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://itunes.apple.com/us/app/aliexpress/id436672029
+2025-08-26 16:25:24.544 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://itunes.apple.com/us/app/aliexpress/id436672029
+2025-08-26 16:25:24.546 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://appgallery.cloud.huawei.com/ag/n/app/c100376431?channelid=aliexpress_es&id=62b880f4695f40c8bcaf091ea67ed2de&s=3ae7701d49982bd65666c6e195ffd71687795c1ecc5ebced673bee2264036da5&detailtype=0&v=&shareto=qrcode
+2025-08-26 16:25:24.546 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://appgallery.cloud.huawei.com/ag/n/app/c100376431?channelid=aliexpress_es&id=62b880f4695f40c8bcaf091ea67ed2de&s=3ae7701d49982bd65666c6e195ffd71687795c1ecc5ebced673bee2264036da5&detailtype=0&v=&shareto=qrcode
+2025-08-26 16:25:24.546 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://ipp.aidcgroup.net/#/ipphome
+2025-08-26 16:25:24.546 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://ipp.aidcgroup.net/#/ipphome
+2025-08-26 16:25:24.547 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://campaign.aliexpress.com/wow/gcp/app-redirect-terms/index
+2025-08-26 16:25:24.547 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://campaign.aliexpress.com/wow/gcp/app-redirect-terms/index
+2025-08-26 16:25:24.547 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://www.aliexpress.com/sitemap.html
+2025-08-26 16:25:24.547 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://www.aliexpress.com/sitemap.html
+2025-08-26 16:25:24.547 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://terms.alicdn.com/legal-agreement/terms/suit_bu1_aliexpress/suit_bu1_aliexpress202204182115_66077.html
+2025-08-26 16:25:24.547 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://terms.alicdn.com/legal-agreement/terms/suit_bu1_aliexpress/suit_bu1_aliexpress202204182115_66077.html
+2025-08-26 16:25:24.547 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://rulechannel.alibaba.com/icbu?type=detail&ruleid=2054&cid=1304#/rule/detail?cid=1304&ruleid=2054
+2025-08-26 16:25:24.547 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://rulechannel.alibaba.com/icbu?type=detail&ruleid=2054&cid=1304#/rule/detail?cid=1304&ruleid=2054
+2025-08-26 16:25:24.547 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://campaign.aliexpress.com/wow/gcp-plus/ae/tupr?_immersivemode=true&pha_manifest=upr&disablenav=yes&wh_pid=300000414/pt8amcbikk
+2025-08-26 16:25:24.548 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://campaign.aliexpress.com/wow/gcp-plus/ae/tupr?_immersivemode=true&pha_manifest=upr&disablenav=yes&wh_pid=300000414/pt8amcbikk
+2025-08-26 16:25:24.548 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - Checking URL: https://terms.alicdn.com/legal-agreement/terms/data_processing_agreement_others/20231101174825691/20231101174825691.html
+2025-08-26 16:25:24.549 [Thread-6] DEBUG c.h.searchengine.crawler.UrlFilter - URL filtered - different domain: https://terms.alicdn.com/legal-agreement/terms/data_processing_agreement_others/20231101174825691/20231101174825691.html
+2025-08-26 16:25:24.557 [Thread-6] INFO  c.h.searchengine.crawler.Crawler - Extracted 0 links from https://www.aliexpress.com
+2025-08-26 16:25:24.567 [Thread-6] INFO  c.h.searchengine.crawler.Crawler - Successfully crawled: https://www.aliexpress.com
+2025-08-26 16:25:24.567 [Thread-6] INFO  c.h.searchengine.crawler.Crawler - Completed crawl WyC6Og for URL: https://www.aliexpress.com
+2025-08-26 16:25:25.062 [pool-1-thread-1] DEBUG c.h.searchengine.util.ElasticSearch - Document added to Elasticsearch successfully.
+2025-08-26 16:43:33.765 [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] INFO  o.s.k.l.KafkaMessageListenerContainer - searchengine: partitions revoked: [searchengine-0]
+2025-08-26 16:43:33.892 [org.springframework.kafka.KafkaListenerEndpointContainer#0-2-C-1] INFO  o.s.k.l.KafkaMessageListenerContainer$ListenerConsumer - searchengine: Consumer stopped
+2025-08-26 16:43:33.894 [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] INFO  o.s.k.l.KafkaMessageListenerContainer$ListenerConsumer - searchengine: Consumer stopped
+2025-08-26 16:43:33.891 [org.springframework.kafka.KafkaListenerEndpointContainer#0-4-C-1] INFO  o.s.k.l.KafkaMessageListenerContainer$ListenerConsumer - searchengine: Consumer stopped
+2025-08-26 16:43:33.892 [org.springframework.kafka.KafkaListenerEndpointContainer#0-3-C-1] INFO  o.s.k.l.KafkaMessageListenerContainer$ListenerConsumer - searchengine: Consumer stopped
+2025-08-26 16:43:33.891 [org.springframework.kafka.KafkaListenerEndpointContainer#0-1-C-1] INFO  o.s.k.l.KafkaMessageListenerContainer$ListenerConsumer - searchengine: Consumer stopped
