@@ -114,6 +114,7 @@ public class Crawler {
                     updateCrawlStatusWithError(crawlId, "Page contains minimal or no usable content/links: " + rec.getUrl());
                 } else {
                     indexElasticSearchAsync(rec, webPageContent);
+                    saveToRedisBackup(crawlId, rec.getUrl(), textContent);
                     addUrlsToQueue(rec, innerUrls, rec.getDistance() + 1);
                     logger.info("Successfully crawled: " + rec.getUrl() + " with " + innerUrls.size() + " new URLs at " + new java.util.Date());
                 }
@@ -123,6 +124,16 @@ public class Crawler {
             String errorMsg = "Failed to crawl " + rec.getUrl() + ": " + e.getMessage() + " at " + new java.util.Date();
             logger.error(errorMsg, e);
             updateCrawlStatusWithError(crawlId, errorMsg);
+        }
+    }
+
+    private void saveToRedisBackup(String crawlId, String url, String content) {
+        try {
+            // Store content inside Redis Hash using the URL as key. Highly effective fallback DB.
+            redisTemplate.opsForHash().put(crawlId + ".data", url, content);
+            logger.info("Saved page to Redis backup hash: " + url);
+        } catch (Exception e) {
+            logger.warn("Failed to save backup data to Redis for url: " + url + " - " + e.getMessage());
         }
     }
 
@@ -328,6 +339,7 @@ public class Crawler {
         redisTemplate.delete(crawlId + ".status");
         redisTemplate.delete(crawlId + ".urls.count");
         redisTemplate.delete(crawlId + ".visited");
+        redisTemplate.delete(crawlId + ".data"); // Reset backup hash for this crawlId
         long now = System.currentTimeMillis();
         setCrawlStatus(crawlId, CrawlStatus.of(0, now, 0, null));
         redisTemplate.opsForValue().set(crawlId + ".urls.count", "0");

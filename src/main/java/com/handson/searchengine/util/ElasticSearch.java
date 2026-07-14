@@ -9,16 +9,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class ElasticSearch {
     private static final Logger logger = LoggerFactory.getLogger(ElasticSearch.class);
-    OkHttpClient client = new OkHttpClient();
+
+    // 3 seconds timeout configuration for stable and safe fail-safe fallback triggers
+    OkHttpClient client = new OkHttpClient.Builder()
+            .connectTimeout(3, TimeUnit.SECONDS)
+            .readTimeout(3, TimeUnit.SECONDS)
+            .writeTimeout(3, TimeUnit.SECONDS)
+            .build();
 
     @Value("${elasticsearch.base.url}")
     private String ELASTIC_SEARCH_URL;
@@ -31,6 +39,9 @@ public class ElasticSearch {
 
     @Autowired
     ObjectMapper om;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
     /**
      * מוסיף מסמך חדש לאינדקס
@@ -61,7 +72,8 @@ public class ElasticSearch {
     }
 
     /**
-     * חיפוש עם סינון כדי להוציא עמודי בית ועם highlight
+     * חיפוש עם סינון כדי להוציא עמודי בית ועם highlight.
+     * במקרה של שגיאה או Timeout של שנייה אחת, מופעל מנגנון הגיבוי מול Redis.
      */
     public List<SearchResultDto> search(String query) throws IOException {
         List<SearchResultDto> results = new ArrayList<>();
@@ -89,8 +101,8 @@ public class ElasticSearch {
 
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                logger.error("Search failed: {}", response.code());
-                return results;
+                logger.error("Search failed: {}. Triggering Redis hybrid fallback search.", response.code());
+                return performFallbackRedisSearch(query);
             }
 
             String resp = response.body().string();
@@ -110,7 +122,7 @@ public class ElasticSearch {
                 if (url == null) continue;
                 if (seen.contains(url)) continue;
 
-                // Added logic to skip homepages and prioritize articles
+                // Skip homepages and prioritize articles
                 if (isHomepage(url)) {
                     continue;
                 }
@@ -131,8 +143,80 @@ public class ElasticSearch {
                 if (results.size() >= 50) break;
                 results.add(dto);
             }
+        } catch (Exception e) {
+            logger.warn("Elasticsearch lookup failed due to network or timeout issues ({}). Triggering Redis fallback.", e.getMessage());
+            return performFallbackRedisSearch(query);
         }
         return results;
+    }
+
+    /**
+     * מנגנון הגיבוי המהיר: שליפת כל הנתונים השמורים ב-Redis עבור מזהה ה-Crawl,
+     * וביצוע חיפוש טקסטואלי עם Highlight מותאם ב-Java.
+     * מונע החזרת כפילויות של כתובות URL בריצות זחילה שונות.
+     */
+    private List<SearchResultDto> performFallbackRedisSearch(String query) {
+        List<SearchResultDto> fallbackResults = new ArrayList<>();
+        try {
+            logger.info("Initializing Redis fallback search for query: {}", query);
+
+            // 1. Find all active crawl statuses to identify active/recent crawls
+            Set<String> keys = redisTemplate.keys("*.data");
+            if (keys == null || keys.isEmpty()) {
+                logger.warn("No crawled data found in Redis fallback DB.");
+                return fallbackResults;
+            }
+
+            String lowerQuery = query.toLowerCase(Locale.ROOT);
+            List<SearchResultDto> rawResults = new ArrayList<>();
+
+            // 2. Scan available crawl hashes in Redis and search content inside
+            for (String dataKey : keys) {
+                Map<Object, Object> crawledPages = redisTemplate.opsForHash().entries(dataKey);
+                for (Map.Entry<Object, Object> entry : crawledPages.entrySet()) {
+                    String url = (String) entry.getKey();
+                    String content = (String) entry.getValue();
+
+                    if (url == null || content == null) continue;
+                    if (isHomepage(url)) continue;
+
+                    String lowerContent = content.toLowerCase(Locale.ROOT);
+                    if (lowerContent.contains(lowerQuery)) {
+                        String snippet = buildFallbackSnippet(content, lowerQuery);
+                        rawResults.add(new SearchResultDto(url, snippet));
+                    }
+                }
+            }
+
+            // 3. Deduplicate results by URL to prevent showing duplicates from different crawl runs
+            Map<String, SearchResultDto> uniqueMap = new LinkedHashMap<>();
+            for (SearchResultDto dto : rawResults) {
+                if (dto.getUrl() != null) {
+                    // keeps the first occurrence, maintaining insertion order of keys
+                    uniqueMap.putIfAbsent(dto.getUrl(), dto);
+                }
+            }
+
+            fallbackResults.addAll(uniqueMap.values());
+            logger.info("Redis fallback search completed. Found {} unique matching pages (raw hits containing query: {}).", fallbackResults.size(), rawResults.size());
+        } catch (Exception ex) {
+            logger.error("Severe fallback error searching Redis data: {}", ex.getMessage(), ex);
+        }
+        return fallbackResults;
+    }
+
+    private String buildFallbackSnippet(String content, String query) {
+        int index = content.toLowerCase(Locale.ROOT).indexOf(query);
+        if (index == -1) return content.substring(0, Math.min(content.length(), 150)) + "...";
+
+        int start = Math.max(0, index - 60);
+        int end = Math.min(content.length(), index + query.length() + 80);
+
+        String rawSnippet = content.substring(start, end);
+        String matchedPart = content.substring(index, index + query.length());
+
+        // Add exact simulated HTML em tag highlighting just like Elasticsearch outputs
+        return "..." + rawSnippet.replace(matchedPart, "<em>" + matchedPart + "</em>") + "...";
     }
 
     private boolean isHomepage(String url) {

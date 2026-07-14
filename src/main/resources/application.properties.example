@@ -28,7 +28,7 @@ spring.redis.ssl=true
 # ==========================================
 # ELASTICSEARCH CONFIGURATION (Aiven Cloud Template)
 # ==========================================
-elasticsearch.base.url=https://<USER>:<PASSWORD>@<YOUR_AIVEN_ES_HOST>:<PORT>
+elasticsearch.base.url=https://<USER>:<PASSWORD>@<YOUR_BONSAI_HOST>:<PORT>
 elasticsearch.key=<USER>:<PASSWORD>
 elasticsearch.index=elad
 

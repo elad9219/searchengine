@@ -1,4 +1,11 @@
 FROM eclipse-temurin:11
-COPY target/searchengine-*.jar /usr/src/searchengine.jar
+
+WORKDIR /usr/src
+
+COPY ca.pem ca.pem
+
+COPY target/searchengine-*.jar searchengine.jar
+
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "/usr/src/searchengine.jar"]
+
+ENTRYPOINT ["java", "-jar", "searchengine.jar"]
