@@ -24,6 +24,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -130,8 +131,11 @@ public class Crawler {
     private void saveToRedisBackup(String crawlId, String url, String content) {
         try {
             // Store content inside Redis Hash using the URL as key. Highly effective fallback DB.
-            redisTemplate.opsForHash().put(crawlId + ".data", url, content);
-            logger.info("Saved page to Redis backup hash: " + url);
+            String dataKey = crawlId + ".data";
+            redisTemplate.opsForHash().put(dataKey, url, content);
+            // Apply 24-hour TTL to prevent infinite storage leak in Redis fallback
+            redisTemplate.expire(dataKey, 24, TimeUnit.HOURS);
+            logger.info("Saved page to Redis backup hash with 24h TTL: " + url);
         } catch (Exception e) {
             logger.warn("Failed to save backup data to Redis for url: " + url + " - " + e.getMessage());
         }
@@ -342,14 +346,22 @@ public class Crawler {
         redisTemplate.delete(crawlId + ".data"); // Reset backup hash for this crawlId
         long now = System.currentTimeMillis();
         setCrawlStatus(crawlId, CrawlStatus.of(0, now, 0, null));
+
         redisTemplate.opsForValue().set(crawlId + ".urls.count", "0");
+        redisTemplate.expire(crawlId + ".urls.count", 24, TimeUnit.HOURS);
+
         redisTemplate.opsForSet().add(crawlId + ".visited", crawlId);
+        redisTemplate.expire(crawlId + ".visited", 24, TimeUnit.HOURS);
+
         logger.info("Initialized crawl in Redis with ID: " + crawlId + " at " + new java.util.Date());
     }
 
     private void setCrawlStatus(String crawlId, CrawlStatus crawlStatus) throws JsonProcessingException {
         crawlStatus.setLastModifiedMillis(System.currentTimeMillis());
-        redisTemplate.opsForValue().set(crawlId + ".status", om.writeValueAsString(crawlStatus));
+        String key = crawlId + ".status";
+        redisTemplate.opsForValue().set(key, om.writeValueAsString(crawlStatus));
+        // Apply 24-hour TTL to prevent infinite storage leak for status keys
+        redisTemplate.expire(key, 24, TimeUnit.HOURS);
         logger.debug("Set crawl status for ID: " + crawlId + " at " + new java.util.Date());
     }
 
@@ -368,11 +380,17 @@ public class Crawler {
     }
 
     private boolean crawlHasVisited(CrawlerRecord rec, String url) {
+        String visitedKey = rec.getCrawlId() + ".visited";
+        String countKey = rec.getCrawlId() + ".urls.count";
         @SuppressWarnings("unchecked")
-        Boolean isMember = redisTemplate.opsForSet().isMember(rec.getCrawlId() + ".visited", url);
+        Boolean isMember = redisTemplate.opsForSet().isMember(visitedKey, url);
         if (isMember == null || !isMember) {
-            redisTemplate.opsForSet().add(rec.getCrawlId() + ".visited", url);
-            redisTemplate.opsForValue().increment(rec.getCrawlId() + ".urls.count", 1L);
+            redisTemplate.opsForSet().add(visitedKey, url);
+            redisTemplate.expire(visitedKey, 24, TimeUnit.HOURS);
+
+            redisTemplate.opsForValue().increment(countKey, 1L);
+            redisTemplate.expire(countKey, 24, TimeUnit.HOURS);
+
             try {
                 CrawlStatus cur = readStatus(rec.getCrawlId());
                 long startTime = cur != null ? cur.getStartTimeMillis() : rec.getStartTime();
