@@ -1,145 +1,138 @@
-# **Web Search Engine**
+# Web Search Engine — Distributed Crawler
 
-A full-stack web search engine built from scratch. It allows users to crawl websites, index their content, and perform word-based searches. The project demonstrates a modern microservices architecture using Spring Boot, Kafka, Redis, and Elasticsearch, with a React frontend. The application is deployed using Docker.
+A full-stack web search engine built from scratch with Spring Boot, Kafka, Redis, Elasticsearch, and React. Users can start a crawl, monitor its progress, index discovered content, and search the indexed pages from a web interface.
 
-## **Quick Links**
+## Quick Links
 
-- **Live Project**: [https://esearchengine.vercel.app/](https://esearchengine.vercel.app/)
-- **Swagger UI**: [https://search.runmydocker-app.com/swagger-ui.html](https://search.runmydocker-app.com/swagger-ui.html)
-- **Backend Repository**: [https://github.com/elad9219/searchengine](https://github.com/elad9219/searchengine)
-- **Frontend Repository**: [https://github.com/elad9219/searchengine-frontend](https://github.com/elad9219/searchengine-frontend)
+- **Live Project:** [esearchengine.vercel.app](https://esearchengine.vercel.app/)
+- **API Documentation (Swagger):** [search.runmydocker-app.com/swagger-ui.html](https://search.runmydocker-app.com/swagger-ui.html)
+- **Backend Repository:** [github.com/elad9219/searchengine](https://github.com/elad9219/searchengine)
+- **Frontend Repository:** [github.com/elad9219/searchengine-frontend](https://github.com/elad9219/searchengine-frontend)
 
-## **Table of Contents**
+## Highlights
 
-* [Features](https://www.google.com/search?q=%23features)  
-* [Technologies](https://www.google.com/search?q=%23technologies)  
-* [Screenshots](https://www.google.com/search?q=%23screenshots)  
-* [Installation](https://www.google.com/search?q=%23installation)  
-* [Usage](https://www.google.com/search?q=%23usage)  
-* [Project Structure](https://www.google.com/search?q=%23project-structure)  
-* [Contributing](https://www.google.com/search?q=%23contributing)  
-* [License](https://www.google.com/search?q=%23license)  
-* [Contact](https://www.google.com/search?q=%23contact)
+- **Distributed crawling:** Uses Kafka to decouple crawl processing and support asynchronous work.
+- **Configurable crawler:** Accepts crawl parameters such as URL, distance, maximum pages, and timeout.
+- **Real-time crawl status:** Stores and exposes crawl progress through Redis.
+- **Search indexing:** Stores crawled page content in Elasticsearch for fast text retrieval.
+- **Full-stack workflow:** React frontend for starting crawls, monitoring status, and searching indexed pages.
+- **Containerized backend:** Docker support for portable deployment.
 
-## **Features**
+## Architecture
 
-* **Web Crawler**: A robust crawler that recursively scans websites based on user-defined parameters (URL, distance, max pages, timeout).  
-* **Distributed System**: Utilizes a Kafka-based microservices architecture for efficient and scalable processing.  
-* **Real-time Status**: Tracks and displays the crawl status in real-time on the frontend using Redis.  
-* **Content Indexing**: Indexes crawled web page content into Elasticsearch for fast and relevant search results.  
-* **Search Functionality**: Allows users to search for keywords and retrieves relevant web pages from the indexed data.  
-* **User-Friendly Interface**: A responsive React frontend for managing crawls and viewing search results.  
-* **Dockerized Deployment**: Packaged as a Docker image for easy deployment and portability.
+```text
+React Frontend
+      |
+      v
+Spring Boot REST API
+      |
+      +----> Kafka --------> Crawl Processing
+      |
+      +----> Redis --------> Real-Time Crawl Status
+      |
+      +----> Elasticsearch -> Indexed Content / Search
+```
 
-## **Technologies**
+## Technologies
 
-* **Backend**: Java 11, Spring Boot, Maven  
-* **Frontend**: React, TypeScript, Node.js  
-* **Messaging**: Apache Kafka  
-* **Databases**: Redis (for crawl status), Elasticsearch (for search indexing)  
-* **Containerization**: Docker  
-* **Documentation**: Swagger  
-* **Version Control**: Git, GitHub
+- **Backend:** Java 11, Spring Boot, Maven
+- **Frontend:** React, TypeScript, Node.js
+- **Messaging:** Apache Kafka
+- **Data Stores:** Redis, Elasticsearch
+- **Containerization:** Docker
+- **API Documentation:** Swagger
+- **Version Control:** Git, GitHub
 
-## **Screenshots**
+## Screenshots
 
+### Crawl
 
-### **Crawl**
+<img width="2560" height="1440" alt="Crawler screen" src="https://github.com/user-attachments/assets/25b0c483-625a-4ac4-b0e2-1fe69a764770" />
 
+### Advanced Crawl
 
-<img width="2560" height="1440" alt="image" src="https://github.com/user-attachments/assets/25b0c483-625a-4ac4-b0e2-1fe69a764770" />
+<img width="2560" height="1440" alt="Advanced crawler screen" src="https://github.com/user-attachments/assets/b277150c-4b4b-42d0-a20e-8968bf36ed2f" />
 
+### Search
 
-### **Advanced Crawl**
+<img width="2560" height="1440" alt="Search results screen" src="https://github.com/user-attachments/assets/3dbdac2b-77a8-4499-9ba5-db216aa24489" />
 
+## Usage
 
-<img width="2560" height="1440" alt="image" src="https://github.com/user-attachments/assets/b277150c-4b4b-42d0-a20e-8968bf36ed2f" />
+- **Start Crawl:** Enter a URL and crawl parameters to begin indexing.
+- **View Status:** Monitor crawl progress from the frontend.
+- **Search:** Enter keywords to retrieve matching indexed pages.
 
+## Local Setup
 
-### **Search**
+### Prerequisites
 
+- Java 11
+- Maven
+- Node.js and npm
+- Kafka
+- Redis
+- Elasticsearch
+- Docker (optional)
+- Git
 
-<img width="2560" height="1440" alt="image" src="https://github.com/user-attachments/assets/3dbdac2b-77a8-4499-9ba5-db216aa24489" />
+### Backend
 
+```bash
+git clone https://github.com/elad9219/searchengine.git
+cd searchengine
+mvn clean install
+mvn spring-boot:run
+```
 
+Configure your own Kafka, Redis, and Elasticsearch connection settings before starting the backend.
 
-\--\>
+### Frontend
 
-## **Installation**
+```bash
+git clone https://github.com/elad9219/searchengine-frontend.git
+cd searchengine-frontend
+npm install
+npm start
+```
 
-### **Prerequisites**
+### Docker
 
-* Java 11  
-* Docker  
-* Git  
-* Redis, Kafka, and Elasticsearch instances (or use provided remote instances)
+After configuring the required external services:
 
-### **Build and Run**
+```bash
+docker build -t searchengine-backend .
+docker run -p 8080:8080 searchengine-backend
+```
 
-1. **Clone the repositories**:  
-   git clone \[INSERT YOUR GITHUB BACKEND REPO URL HERE\]  
-   git clone \[INSERT YOUR GITHUB FRONTEND REPO URL HERE\]
+## Project Structure
 
-2. Build the Docker image:  
-   This project is configured to run using Docker. Simply build the image from the project's root directory.  
-   docker build \--platform linux/amd64 \-t elad9219/your-project-name:tag .
+### Backend
 
-3. **Run the container**:  
-   docker run \-p 8080:8080 elad9219/your-project-name:tag
+```text
+src/main/java/com/handson/searchengine/
+├── crawler/
+├── kafka/
+├── model/
+└── util/
+```
 
-4. Access the application at http://localhost:8080.
+### Frontend
 
-## **Usage**
+```text
+src/
+├── components/
+├── utils/
+└── App.tsx
+```
 
-* **Start Crawl**: Enter a URL and crawling parameters to initiate a distributed crawl.  
-* **View Status**: Monitor the crawl progress in real-time.  
-* **Search**: Enter keywords to find relevant pages from the indexed content.
+## License
 
-## **Project Structure**
+MIT License — see the repository license file for details.
 
-### **Backend (your-backend-repo-name)**
+## Contact
 
-your-backend-repo-name/  
-├── src/  
-│   ├── main/  
-│   │   ├── java/com/handson/searchengine/  
-│   │   │   ├── crawler/  
-│   │   │   ├── kafka/  
-│   │   │   ├── model/  
-│   │   │   ├── util/  
-│   │   ├── resources/  
-│   │   │   ├── static/  
-│   │   │   ├── application.properties  
-├── pom.xml  
-├── Dockerfile
-
-### **Frontend (your-frontend-repo-name)**
-
-your-frontend-repo-name/  
-├── src/  
-│   ├── components/  
-│   ├── utils/  
-│   │   ├── globals.ts  
-│   ├── App.tsx  
-├── public/  
-├── package.json  
-├── tsconfig.json
-
-## **Contributing**
-
-1. Fork the repository.  
-2. Create a branch: git checkout \-b feature-name.  
-3. Commit: git commit \-m 'Add feature'.  
-4. Push: git push origin feature-name.  
-5. Open a pull request.
-
-## **License**
-
-MIT License \- see LICENSE file.
-
-## **Contact**
-
-* **Author**: Elad Tennenboim  
-* **GitHub**: [elad9219](https://github.com/elad9219)  
-* **Email**: elad9219@gmail.com  
-* **LinkedIn**: [https://www.linkedin.com/in/elad-tennenboim/](https://www.linkedin.com/in/elad-tennenboim/)
+- **Elad Tennenboim**
+- **GitHub:** [elad9219](https://github.com/elad9219)
+- **LinkedIn:** [linkedin.com/in/elad-tennenboim](https://www.linkedin.com/in/elad-tennenboim/)
+- **Email:** elad9219@gmail.com
