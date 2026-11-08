@@ -4,5 +4,7 @@ public enum StopReason {
     maxDistance,
     maxUrls,
     timeout,
-    userInitiated
+    userInitiated,
+    completed,
+    error
 }

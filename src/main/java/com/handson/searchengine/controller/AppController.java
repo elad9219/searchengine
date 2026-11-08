@@ -1,148 +1,80 @@
 package com.handson.searchengine.controller;
 
+import com.handson.searchengine.crawler.Crawler;
 import com.handson.searchengine.model.CrawlStatusOut;
 import com.handson.searchengine.model.CrawlerRequest;
 import com.handson.searchengine.model.SearchResultDto;
 import com.handson.searchengine.util.ElasticSearch;
-import com.handson.searchengine.crawler.Crawler;
-import com.handson.searchengine.kafka.Producer;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Random;
+import java.util.UUID;
 
-/**
- * REST controller for crawl/search. Defensive: all endpoints return a valid response
- * even if internals (redis / es) fail.
- */
 @RestController
 @RequestMapping("/api")
 public class AppController {
+    private final Crawler crawler;
+    private final ElasticSearch elasticSearch;
 
-    private static final int ID_LENGTH = 6;
-    private Random random = new Random();
+    public AppController(Crawler crawler, ElasticSearch elasticSearch) {
+        this.crawler = crawler;
+        this.elasticSearch = elasticSearch;
+    }
 
-    @Autowired
-    Crawler crawler;
-
-    @Autowired
-    Producer producer;
-
-    @Autowired
-    ElasticSearch elasticSearch;
-
-    // Start a crawl: returns crawlId (string)
     @PostMapping("/crawl")
     public String crawl(@RequestBody CrawlerRequest request) throws IOException, InterruptedException {
-        String crawlId = generateCrawlId();
-
-        // Normalize URL: ensure protocol and WWW (best-effort)
-        String u = request.getUrl();
-        if (u == null) u = "";
-        u = u.trim();
-        if (!u.startsWith("http://") && !u.startsWith("https://")) {
-            u = "https://" + u;
-        }
-        try {
-            URL parsed = new URL(u);
-            String host = parsed.getHost();
-            if (!host.startsWith("www.")) {
-                String newHost = "www." + host;
-                StringBuilder rebuilt = new StringBuilder();
-                rebuilt.append(parsed.getProtocol()).append("://").append(newHost);
-                if (parsed.getPort() != -1) rebuilt.append(":").append(parsed.getPort());
-                String path = parsed.getPath();
-                if (path != null) rebuilt.append(path);
-                if (parsed.getQuery() != null) rebuilt.append("?").append(parsed.getQuery());
-                u = rebuilt.toString();
-            }
-        } catch (Exception e) {
-            // if parsing fails, keep best-effort url
-        }
-        request.setUrl(u);
-
-        // run crawler in background
-        new Thread(() -> {
-            try {
-                crawler.crawl(crawlId, request);
-            } catch (Exception e) {
-                // Log and swallow - controller already returned crawlId to client.
-                e.printStackTrace();
-            }
-        }).start();
-
+        validate(request);
+        String crawlId = UUID.randomUUID().toString().replace("-", "").substring(0, 16);
+        crawler.crawl(crawlId, request);
         return crawlId;
     }
 
-    // Get crawl status (returns CrawlStatusOut). Defensive: always returns a valid object.
     @GetMapping("/crawl/{crawlId}")
     public CrawlStatusOut getCrawl(@PathVariable String crawlId) {
-        try {
-            return crawler.getCrawlInfo(crawlId);
-        } catch (Exception e) {
-            // If anything bad happens, return a default "empty" CrawlStatusOut so frontend can render.
-            e.printStackTrace();
-            return CrawlStatusOut.of(com.handson.searchengine.model.CrawlStatus.of(0, 0L, 0, null));
-        }
+        return crawler.getCrawlInfo(crawlId);
     }
 
-    // Stop a running crawl
     @PostMapping("/crawl/{crawlId}/stop")
     public void stopCrawl(@PathVariable String crawlId) {
-        try {
-            CrawlStatusOut status = crawler.getCrawlInfo(crawlId);
-            if (status != null && status.getStopReason() == null) {
-                crawler.stopCrawlGracefully(crawlId, "Manually stopped by user");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        crawler.stopCrawlGracefully(crawlId);
     }
 
-    // Search endpoint: returns list of url + snippet (highlight) DTOs
     @GetMapping("/search")
     public List<SearchResultDto> search(@RequestParam String query) throws IOException {
-        return elasticSearch.search(query);
+        if (query.trim().isEmpty()) return java.util.Collections.emptyList();
+        return elasticSearch.search(query.trim());
     }
 
-    // send direct kafka payload (kept for testing) - also normalize URL
     @PostMapping("/sendKafka")
     public String sendKafka(@RequestBody CrawlerRequest request) throws IOException, InterruptedException {
-        String u = request.getUrl();
-        if (u == null) u = "";
-        u = u.trim();
-        if (!u.startsWith("http://") && !u.startsWith("https://")) {
-            u = "https://" + u;
-        }
-        try {
-            URL parsed = new URL(u);
-            String host = parsed.getHost();
-            if (!host.startsWith("www.")) {
-                String newHost = "www." + host;
-                StringBuilder rebuilt = new StringBuilder();
-                rebuilt.append(parsed.getProtocol()).append("://").append(newHost);
-                if (parsed.getPort() != -1) rebuilt.append(":").append(parsed.getPort());
-                String path = parsed.getPath();
-                if (path != null) rebuilt.append(path);
-                if (parsed.getQuery() != null) rebuilt.append("?").append(parsed.getQuery());
-                u = rebuilt.toString();
-            }
-        } catch (Exception e) { /* ignore */ }
-        request.setUrl(u);
-
-        producer.send(request);
+        crawl(request);
         return "OK";
     }
 
-    private String generateCrawlId() {
-        String charPool = "ABCDEFHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        StringBuilder res = new StringBuilder();
-        for (int i = 0; i < ID_LENGTH; i++) {
-            res.append(charPool.charAt(random.nextInt(charPool.length())));
+    private void validate(CrawlerRequest request) {
+        if (request == null || request.getUrl() == null || request.getUrl().trim().isEmpty()
+                || request.getMaxSeconds() < 1 || request.getMaxSeconds() > 9999
+                || request.getMaxDistance() < -1
+                || request.getMaxUrls() == 0 || request.getMaxUrls() < -1) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid crawl parameters");
         }
-        return res.toString();
+        String url = request.getUrl().trim();
+        if (!url.contains("://")) url = "https://" + url;
+        try {
+            URI uri = new URI(url).normalize();
+            if (!("http".equalsIgnoreCase(uri.getScheme()) || "https".equalsIgnoreCase(uri.getScheme()))
+                    || uri.getHost() == null || uri.getUserInfo() != null
+                    || uri.getPort() == 0 || uri.getPort() > 65535) {
+                throw new URISyntaxException(url, "Expected an HTTP or HTTPS URL");
+            }
+            request.setUrl(uri.toASCIIString().split("#", 2)[0]);
+        } catch (URISyntaxException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid website URL");
+        }
     }
 }
