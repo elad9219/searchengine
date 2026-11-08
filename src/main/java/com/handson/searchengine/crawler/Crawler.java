@@ -7,7 +7,6 @@ import com.handson.searchengine.model.CrawlerRecord;
 import com.handson.searchengine.model.CrawlerRequest;
 import com.handson.searchengine.model.UrlSearchDoc;
 import com.handson.searchengine.util.ElasticSearch;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +24,7 @@ import java.util.stream.Collectors;
 @Service
 public class Crawler {
     private static final Logger logger = LoggerFactory.getLogger(Crawler.class);
+    private final PublicPageFetcher pageFetcher = new PublicPageFetcher();
     private final CrawlStateStore states;
     private final StringRedisTemplate redis;
     private final Producer producer;
@@ -78,6 +78,8 @@ public class Crawler {
                 if (states.queue(child)) producer.send(child);
             }
             states.finish(record);
+        } catch (PublicPageFetcher.RejectedTargetException e) {
+            states.fail(crawlId, e.getMessage());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             states.fail(crawlId, "Crawl processing was interrupted");
@@ -90,12 +92,7 @@ public class Crawler {
     Document fetch(CrawlerRecord record) throws IOException {
         long remaining = record.getMaxTime() - System.currentTimeMillis();
         if (remaining <= 0) throw new IOException("Crawl deadline reached");
-        return Jsoup.connect(record.getUrl())
-                .userAgent("PortfolioSearchEngine/1.0")
-                .timeout((int) Math.min(15000, remaining))
-                .maxBodySize(2 * 1024 * 1024)
-                .followRedirects(true)
-                .get();
+        return pageFetcher.fetch(record.getUrl(), Math.min(15000, remaining));
     }
 
     private List<String> links(String baseUrl, Document page) {
