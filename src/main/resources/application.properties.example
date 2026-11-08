@@ -12,7 +12,7 @@ spring.kafka.properties.ssl.truststore.type=PEM
 # Kafka Settings Template
 spring.kafka.producer.key-serializer=org.apache.kafka.common.serialization.StringSerializer
 spring.kafka.producer.value-serializer=org.springframework.kafka.support.serializer.JsonSerializer
-spring.kafka.consumer.properties.group.id=searchengine
+spring.kafka.consumer.group-id=searchengine
 spring.kafka.consumer.auto-offset-reset=earliest
 spring.kafka.consumer.key-deserializer=org.apache.kafka.common.serialization.StringDeserializer
 spring.kafka.consumer.value-deserializer=org.springframework.kafka.support.serializer.JsonDeserializer
@@ -20,13 +20,13 @@ spring.kafka.consumer.value-deserializer=org.springframework.kafka.support.seria
 # ==========================================
 # REDIS CONFIGURATION (Upstash Cloud Template)
 # ==========================================
-spring.redis.host=<YOUR_UPSTASH_REDIS_HOST>
-spring.redis.port=<YOUR_UPSTASH_REDIS_PORT>
-spring.redis.password=<YOUR_UPSTASH_REDIS_PASSWORD>
-spring.redis.ssl=true
+spring.data.redis.host=<YOUR_UPSTASH_REDIS_HOST>
+spring.data.redis.port=<YOUR_UPSTASH_REDIS_PORT>
+spring.data.redis.password=<YOUR_UPSTASH_REDIS_PASSWORD>
+spring.data.redis.ssl.enabled=true
 
 # ==========================================
-# ELASTICSEARCH CONFIGURATION (Aiven Cloud Template)
+# ELASTICSEARCH CONFIGURATION (Bonsai Cloud Template)
 # ==========================================
 elasticsearch.base.url=https://<USER>:<PASSWORD>@<YOUR_BONSAI_HOST>:<PORT>
 elasticsearch.key=<USER>:<PASSWORD>
@@ -34,3 +34,6 @@ elasticsearch.index=elad
 
 management.endpoints.web.exposure.include=health,info
 management.endpoint.health.show-details=always
+
+# Preserve the existing HTTP JSON mapper during the framework upgrade.
+spring.http.converters.preferred-json-mapper=jackson2

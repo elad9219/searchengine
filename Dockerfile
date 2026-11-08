@@ -1,4 +1,4 @@
-FROM eclipse-temurin:11
+FROM eclipse-temurin:21-jre
 
 WORKDIR /usr/src
 

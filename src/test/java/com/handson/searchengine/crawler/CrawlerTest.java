@@ -89,7 +89,7 @@ class CrawlerTest {
         when(states.status("missing")).thenReturn(null);
         ResponseStatusException error = assertThrows(ResponseStatusException.class,
                 () -> crawler.getCrawlInfo("missing"));
-        assertEquals(404, error.getStatus().value());
+        assertEquals(404, error.getStatusCode().value());
     }
 
     @Test

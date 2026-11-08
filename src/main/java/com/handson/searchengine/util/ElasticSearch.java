@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.handson.searchengine.model.SearchResultDto;
 import com.handson.searchengine.model.UrlSearchDoc;
 import okhttp3.*;
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -44,10 +44,10 @@ public class ElasticSearch {
     private RedisTemplate<String, Object> redisTemplate;
 
     /**
-     * מוסיף מסמך חדש לאינדקס
+     * Adds a new document to the index.
      */
     public void addData(UrlSearchDoc doc) throws IOException {
-        String auth = new String(Base64.encodeBase64(API_KEY.getBytes()));
+        String auth = Base64.getEncoder().encodeToString(API_KEY.getBytes(StandardCharsets.UTF_8));
         String json = om.writeValueAsString(doc);
 
         RequestBody body = RequestBody.create(
@@ -72,12 +72,11 @@ public class ElasticSearch {
     }
 
     /**
-     * חיפוש עם סינון כדי להוציא עמודי בית ועם highlight.
-     * במקרה של שגיאה או Timeout של שנייה אחת, מופעל מנגנון הגיבוי מול Redis.
+     * Searches with highlights, excludes homepages, and falls back to Redis on failure.
      */
     public List<SearchResultDto> search(String query) throws IOException {
         List<SearchResultDto> results = new ArrayList<>();
-        String auth = new String(Base64.encodeBase64(API_KEY.getBytes()));
+        String auth = Base64.getEncoder().encodeToString(API_KEY.getBytes(StandardCharsets.UTF_8));
 
         String requestBody = "{\n" +
                 "  \"size\": 80,\n" +
@@ -151,9 +150,8 @@ public class ElasticSearch {
     }
 
     /**
-     * מנגנון הגיבוי המהיר: שליפת כל הנתונים השמורים ב-Redis עבור מזהה ה-Crawl,
-     * וביצוע חיפוש טקסטואלי עם Highlight מותאם ב-Java.
-     * מונע החזרת כפילויות של כתובות URL בריצות זחילה שונות.
+     * Searches recent crawl content stored in Redis, highlights matches,
+     * and deduplicates results by URL.
      */
     private List<SearchResultDto> performFallbackRedisSearch(String query) {
         List<SearchResultDto> fallbackResults = new ArrayList<>();
