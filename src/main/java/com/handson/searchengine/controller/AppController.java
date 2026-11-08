@@ -1,8 +1,8 @@
 package com.handson.searchengine.controller;
 
 import com.handson.searchengine.crawler.Crawler;
-import com.handson.searchengine.model.CrawlStatusOut;
 import com.handson.searchengine.model.CrawlerRequest;
+import com.handson.searchengine.model.CrawlStatusOut;
 import com.handson.searchengine.model.SearchResultDto;
 import com.handson.searchengine.util.ElasticSearch;
 import org.springframework.http.HttpStatus;
@@ -18,6 +18,12 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api")
 public class AppController {
+    private static final int MAX_CRAWL_SECONDS = 120;
+    private static final int MAX_CRAWL_DEPTH = 4;
+    private static final int MAX_CRAWL_URLS = 100;
+    private static final int MAX_URL_LENGTH = 2048;
+    private static final int MAX_QUERY_LENGTH = 256;
+
     private final Crawler crawler;
     private final ElasticSearch elasticSearch;
 
@@ -45,9 +51,12 @@ public class AppController {
     }
 
     @GetMapping("/search")
-    public List<SearchResultDto> search(@RequestParam String query) throws IOException {
-        if (query.trim().isEmpty()) return java.util.Collections.emptyList();
-        return elasticSearch.search(query.trim());
+    public List<SearchResultDto> search(@RequestParam String query) {
+        String term = query.strip();
+        if (term.length() > MAX_QUERY_LENGTH) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Search query is too long");
+        }
+        return term.isEmpty() ? List.of() : elasticSearch.search(term);
     }
 
     @PostMapping("/sendKafka")
@@ -58,9 +67,10 @@ public class AppController {
 
     private void validate(CrawlerRequest request) {
         if (request == null || request.getUrl() == null || request.getUrl().trim().isEmpty()
-                || request.getMaxSeconds() < 1 || request.getMaxSeconds() > 9999
-                || request.getMaxDistance() < -1
-                || request.getMaxUrls() == 0 || request.getMaxUrls() < -1) {
+                || request.getMaxSeconds() < 1 || request.getMaxSeconds() > MAX_CRAWL_SECONDS
+                || request.getMaxDistance() < -1 || request.getMaxDistance() > MAX_CRAWL_DEPTH
+                || request.getMaxUrls() == 0 || request.getMaxUrls() < -1
+                || request.getMaxUrls() > MAX_CRAWL_URLS) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid crawl parameters");
         }
         String url = request.getUrl().trim();
@@ -72,9 +82,15 @@ public class AppController {
                     || uri.getPort() == 0 || uri.getPort() > 65535) {
                 throw new URISyntaxException(url, "Expected an HTTP or HTTPS URL");
             }
-            request.setUrl(uri.toASCIIString().split("#", 2)[0]);
+            String normalizedUrl = uri.toASCIIString().split("#", 2)[0];
+            if (normalizedUrl.length() > MAX_URL_LENGTH) {
+                throw new URISyntaxException(url, "Website URL is too long");
+            }
+            request.setUrl(normalizedUrl);
         } catch (URISyntaxException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid website URL");
         }
+        if (request.getMaxDistance() == -1) request.setMaxDistance(CrawlerRequest.DEFAULT_DEPTH);
+        if (request.getMaxUrls() == -1) request.setMaxUrls(CrawlerRequest.DEFAULT_URLS);
     }
 }

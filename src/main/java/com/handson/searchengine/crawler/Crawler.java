@@ -10,35 +10,33 @@ import com.handson.searchengine.util.ElasticSearch;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.net.URI;
-import java.time.Duration;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class Crawler {
     private static final Logger logger = LoggerFactory.getLogger(Crawler.class);
+    private static final int MAX_LINK_CANDIDATES_PER_PAGE = 100;
     private final PublicPageFetcher pageFetcher = new PublicPageFetcher();
     private final CrawlStateStore states;
-    private final StringRedisTemplate redis;
     private final Producer producer;
     private final ElasticSearch elasticSearch;
 
-    public Crawler(CrawlStateStore states, StringRedisTemplate redis,
-                   Producer producer, ElasticSearch elasticSearch) {
+    public Crawler(CrawlStateStore states, Producer producer, ElasticSearch elasticSearch) {
         this.states = states;
-        this.redis = redis;
         this.producer = producer;
         this.elasticSearch = elasticSearch;
     }
 
     public void crawl(String crawlId, CrawlerRequest request) throws IOException, InterruptedException {
+        if (!states.admit()) {
+            throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "Crawl start limit reached");
+        }
         CrawlerRecord record = CrawlerRecord.of(request).withCrawlId(crawlId);
         states.initialize(record);
         try {
@@ -56,25 +54,31 @@ public class Crawler {
         if (!states.claim(record)) return;
 
         try {
-            Document page = fetch(record);
-            if (!isRunning(crawlId)) return;
-            String content = page.body() == null ? "" : page.body().text();
-            if (content.trim().isEmpty()) throw new IOException("Page has no readable content");
-
-            String backupKey = crawlId + ".data";
-            redis.opsForHash().put(backupKey, record.getUrl(), content);
-            redis.expire(backupKey, Duration.ofHours(24));
-
+            boolean root = record.getDistance() == 0;
+            Document page;
+            String content;
             try {
-                elasticSearch.addData(UrlSearchDoc.of(crawlId, content, record.getUrl(),
-                        record.getBaseUrl(), record.getDistance(), "html"));
+                page = fetch(record);
+                if (!root && !sameOrigin(record.getBaseUrl(), page.location())) {
+                    throw new IOException("Child page redirected outside the crawl origin");
+                }
+                content = page.body() == null ? "" : page.body().text();
+                if (content.isBlank()) throw new IOException("Page has no readable content");
             } catch (IOException e) {
-                logger.warn("Index request failed; Redis backup retained for crawl {}", crawlId);
+                if (root) throw e;
+                states.skip(record);
+                return;
             }
 
             if (!isRunning(crawlId)) return;
-            for (String url : links(record.getBaseUrl(), page)) {
-                CrawlerRecord child = CrawlerRecord.of(record).withUrl(url).withIncDistance();
+            String scope = root ? page.location() : record.getBaseUrl();
+            elasticSearch.addData(UrlSearchDoc.of(crawlId, content, record.getUrl(),
+                    scope, record.getDistance(), "html"));
+
+            if (!isRunning(crawlId)) return;
+            for (String url : links(scope, page)) {
+                CrawlerRecord child = CrawlerRecord.of(record).withBaseUrl(scope)
+                        .withUrl(url).withIncDistance();
                 if (states.queue(child)) producer.send(child);
             }
             states.finish(record);
@@ -96,11 +100,18 @@ public class Crawler {
     }
 
     private List<String> links(String baseUrl, Document page) {
-        return page.select("a[href]").eachAttr("abs:href").stream()
-                .filter(url -> sameOrigin(baseUrl, url))
-                .map(url -> url.split("#", 2)[0])
+        String currentPage = withoutFragment(page.location());
+        return page.selectStream("a[href]")
+                .map(link -> withoutFragment(link.absUrl("href")))
+                .filter(url -> url.length() <= 2048 && !url.equals(currentPage) && sameOrigin(baseUrl, url))
                 .distinct()
-                .collect(Collectors.toList());
+                .limit(MAX_LINK_CANDIDATES_PER_PAGE)
+                .toList();
+    }
+
+    private String withoutFragment(String url) {
+        int fragment = url.indexOf('#');
+        return fragment < 0 ? url : url.substring(0, fragment);
     }
 
     private boolean sameOrigin(String baseUrl, String url) {

@@ -10,7 +10,6 @@ public class CrawlerRecord {
     long maxTime;
     int maxUrls;
 
-    // משתמשים בגטרים של CrawlerRequest במקום גישה לשדות פרטיים
     public static CrawlerRecord of(CrawlerRequest r) {
         long startTime = System.currentTimeMillis();
         CrawlerRecord res = new CrawlerRecord();
@@ -39,6 +38,11 @@ public class CrawlerRecord {
 
     public CrawlerRecord withCrawlId(String crawlId) {
         this.crawlId = crawlId;
+        return this;
+    }
+
+    public CrawlerRecord withBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
         return this;
     }
 

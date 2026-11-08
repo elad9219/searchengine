@@ -14,6 +14,17 @@ local function terminal(reason, message)
     end
 end
 
+if op == 'admit' then
+    local starts = tonumber(redis.call('GET', key) or '0')
+    if starts >= 6 then return {0} end
+    if starts == 0 then
+        redis.call('SET', key, 1, 'EX', 60)
+    else
+        redis.call('INCR', key)
+    end
+    return {1}
+end
+
 if op == 'init' then
     if redis.call('EXISTS', key) == 1 then return {0} end
     redis.call('HSET', key,
@@ -58,18 +69,20 @@ elseif op == 'queue' then
 elseif op == 'claim' then
     if get('stopReason') or get('url:' .. ARGV[3]) ~= 'queued' then return {0} end
     redis.call('HSET', key, 'url:' .. ARGV[3], 'processing')
-elseif op == 'finish' then
+elseif op == 'finish' or op == 'skip' then
     local field = 'url:' .. ARGV[3]
     if get(field) ~= 'processing' then return {0} end
     redis.call('HSET', key, field, 'done')
     local pending = redis.call('HINCRBY', key, 'pending', -1)
     if not get('stopReason') then
-        redis.call('HINCRBY', key, 'numPages', 1)
-        redis.call('HSET', key, 'distance',
-            math.max(tonumber(get('distance')), tonumber(ARGV[4])))
+        if op == 'finish' then
+            redis.call('HINCRBY', key, 'numPages', 1)
+            redis.call('HSET', key, 'distance',
+                math.max(tonumber(get('distance')), tonumber(ARGV[4])))
+        end
         if pending == 0 then
             local maxUrls = tonumber(get('maxUrls'))
-            if maxUrls > 0 and tonumber(get('numPages')) >= maxUrls then
+            if maxUrls > 0 and tonumber(get('scheduled')) >= maxUrls then
                 terminal('maxUrls')
             elseif get('depthLimited') then
                 terminal('maxDistance')

@@ -14,6 +14,7 @@ import java.util.List;
 
 @Component
 public class CrawlStateStore {
+    private static final String ADMISSION_KEY = "crawl:admission";
     private final StringRedisTemplate redis;
     private final DefaultRedisScript<List> script;
 
@@ -22,6 +23,14 @@ public class CrawlStateStore {
         this.script = new DefaultRedisScript<>();
         this.script.setLocation(new ClassPathResource("crawl-state.lua"));
         this.script.setResultType(List.class);
+    }
+
+    public boolean admit() {
+        return admit(ADMISSION_KEY);
+    }
+
+    boolean admit(String admissionKey) {
+        return succeeded(execute(admissionKey, "admit"));
     }
 
     public void initialize(CrawlerRecord record) {
@@ -47,6 +56,10 @@ public class CrawlStateStore {
                 Integer.toString(record.getDistance()));
     }
 
+    public void skip(CrawlerRecord record) {
+        changed(record.getCrawlId(), "skip", record.getUrl());
+    }
+
     public void stop(String crawlId, String message) {
         changed(crawlId, "stop", message);
     }
@@ -56,7 +69,7 @@ public class CrawlStateStore {
     }
 
     public CrawlStatus status(String crawlId) {
-        List<?> result = execute(crawlId, "status");
+        List<?> result = execute(key(crawlId), "status");
         if (result.isEmpty()) return null;
         String reason = result.get(3).toString();
         CrawlStatus status = CrawlStatus.of(
@@ -71,17 +84,20 @@ public class CrawlStateStore {
     }
 
     private boolean changed(String id, String operation, String... values) {
-        List<?> result = execute(id, operation, values);
+        return succeeded(execute(key(id), operation, values));
+    }
+
+    private boolean succeeded(List<?> result) {
         return !result.isEmpty() && "1".equals(result.get(0).toString());
     }
 
-    private List<?> execute(String id, String operation, String... values) {
+    private List<?> execute(String redisKey, String operation, String... values) {
         List<String> args = new ArrayList<>();
         args.add(operation);
         args.add(Long.toString(System.currentTimeMillis()));
         Collections.addAll(args, values);
         List<?> result = redis.execute(script,
-                Collections.singletonList(key(id)), args.toArray());
+                Collections.singletonList(redisKey), args.toArray());
         if (result == null) throw new IllegalStateException("Redis returned no crawl state");
         return result;
     }

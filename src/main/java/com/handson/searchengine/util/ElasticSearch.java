@@ -1,272 +1,149 @@
 package com.handson.searchengine.util;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.handson.searchengine.model.SearchResultDto;
 import com.handson.searchengine.model.UrlSearchDoc;
-import okhttp3.*;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 @Component
 public class ElasticSearch {
     private static final Logger logger = LoggerFactory.getLogger(ElasticSearch.class);
+    private static final MediaType JSON = MediaType.get("application/json");
 
-    // 3 seconds timeout configuration for stable and safe fail-safe fallback triggers
-    OkHttpClient client = new OkHttpClient.Builder()
-            .connectTimeout(3, TimeUnit.SECONDS)
-            .readTimeout(3, TimeUnit.SECONDS)
-            .writeTimeout(3, TimeUnit.SECONDS)
+    private final OkHttpClient client = new OkHttpClient.Builder()
+            .callTimeout(3, TimeUnit.SECONDS)
             .build();
+    private final ObjectMapper mapper;
+    private final String indexUrl;
+    private final String authorization;
 
-    @Value("${elasticsearch.base.url}")
-    private String ELASTIC_SEARCH_URL;
+    public ElasticSearch(ObjectMapper mapper,
+                         @Value("${elasticsearch.base.url}") String baseUrl,
+                         @Value("${elasticsearch.key}") String apiKey,
+                         @Value("${elasticsearch.index}") String index) {
+        this.mapper = mapper;
+        this.indexUrl = baseUrl + "/" + index;
+        this.authorization = "Basic " + Base64.getEncoder()
+                .encodeToString(apiKey.getBytes(StandardCharsets.UTF_8));
+    }
 
-    @Value("${elasticsearch.key}")
-    private String API_KEY;
-
-    @Value("${elasticsearch.index}")
-    private String index;
-
-    @Autowired
-    ObjectMapper om;
-
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
-
-    /**
-     * Adds a new document to the index.
-     */
     public void addData(UrlSearchDoc doc) throws IOException {
-        String auth = Base64.getEncoder().encodeToString(API_KEY.getBytes(StandardCharsets.UTF_8));
-        String json = om.writeValueAsString(doc);
-
-        RequestBody body = RequestBody.create(
-                MediaType.parse("application/json"),
-                json
-        );
-
-        Request request = new Request.Builder()
-                .url(ELASTIC_SEARCH_URL + "/" + index + "/_doc")
-                .post(body)
-                .addHeader("Content-Type", "application/json")
-                .addHeader(HttpHeaders.AUTHORIZATION, "Basic " + auth)
-                .build();
-
-        try (Response response = client.newCall(request).execute()) {
+        try (Response response = post("_doc", doc)) {
             if (!response.isSuccessful()) {
-                logger.error("Failed to add data to Elasticsearch: {} {}", response.code(), response.message());
-            } else {
-                logger.debug("Document added to Elasticsearch successfully.");
+                throw new IOException("Elasticsearch indexing returned HTTP " + response.code());
             }
         }
     }
 
-    /**
-     * Searches with highlights, excludes homepages, and falls back to Redis on failure.
-     */
-    public List<SearchResultDto> search(String query) throws IOException {
-        List<SearchResultDto> results = new ArrayList<>();
-        String auth = Base64.getEncoder().encodeToString(API_KEY.getBytes(StandardCharsets.UTF_8));
+    public List<SearchResultDto> search(String query) {
+        Map<String, Object> body = Map.of(
+                "size", 80,
+                "query", Map.of("bool", Map.of("must", List.of(
+                        Map.of("multi_match", Map.of("query", query,
+                                "fields", List.of("title^3", "content")))))),
+                "highlight", Map.of(
+                        "pre_tags", List.of("<em>"), "post_tags", List.of("</em>"),
+                        "fields", Map.of("content", Map.of(), "title", Map.of())));
 
-        String requestBody = "{\n" +
-                "  \"size\": 80,\n" +
-                "  \"query\": {\n" +
-                "    \"bool\": {\n" +
-                "      \"must\": [\n" +
-                "        { \"multi_match\": { \"query\": \"" + escapeJson(query) + "\", \"fields\": [\"title^3\", \"content\"] } }\n" +
-                "      ]\n" +
-                "    }\n" +
-                "  },\n" +
-                "  \"highlight\": { \"pre_tags\": [\"<em>\"], \"post_tags\": [\"</em>\"], \"fields\": { \"content\": {}, \"title\": {} } }\n" +
-                "}";
-
-        RequestBody body = RequestBody.create(MediaType.parse("application/json"), requestBody);
-        Request request = new Request.Builder()
-                .url(ELASTIC_SEARCH_URL + "/" + index + "/_search")
-                .post(body)
-                .addHeader("Content-Type", "application/json")
-                .addHeader(HttpHeaders.AUTHORIZATION, "Basic " + auth)
-                .build();
-
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                logger.error("Search failed: {}. Triggering Redis hybrid fallback search.", response.code());
-                return performFallbackRedisSearch(query);
+        try (Response response = post("_search", body)) {
+            if (!response.isSuccessful() && response.code() != 404) {
+                throw new IOException("Elasticsearch search returned HTTP " + response.code());
+            }
+            if (response.body() == null) throw new IOException("Missing Elasticsearch response body");
+            JsonNode result = mapper.readTree(response.body().byteStream());
+            if (result == null) throw new IOException("Empty Elasticsearch response body");
+            if (response.code() == 404 && "index_not_found_exception".equals(
+                    result.path("error").path("type").asText())) {
+                return List.of();
             }
 
-            String resp = response.body().string();
-            Map<String, Object> map = om.readValue(resp, Map.class);
-            Map<String, Object> hitsMap = (Map<String, Object>) map.get("hits");
-            List<Map<String, Object>> hits = hitsMap == null ? null : (List<Map<String, Object>>) hitsMap.get("hits");
-            if (hits == null) return results;
+            JsonNode hits = result.path("hits").path("hits");
+            if (!response.isSuccessful() || !hits.isArray()
+                    || result.path("timed_out").asBoolean()
+                    || result.path("_shards").path("failed").asInt() > 0) {
+                throw new IOException("Elasticsearch did not return a complete search result");
+            }
+            return searchResults(hits);
+        } catch (IOException e) {
+            logger.warn("Elasticsearch search failed: {}", e.getClass().getSimpleName());
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                    "Search is temporarily unavailable", e);
+        }
+    }
 
-            Set<String> seen = new LinkedHashSet<>();
-            List<SearchResultDto> articleCandidates = new ArrayList<>();
-            List<SearchResultDto> others = new ArrayList<>();
+    private Response post(String operation, Object body) throws IOException {
+        Request request = new Request.Builder()
+                .url(indexUrl + "/" + operation)
+                .header(HttpHeaders.AUTHORIZATION, authorization)
+                .post(RequestBody.create(JSON, mapper.writeValueAsBytes(body)))
+                .build();
+        return client.newCall(request).execute();
+    }
 
-            for (Map<String, Object> hit : hits) {
-                Map<String, Object> src = (Map<String, Object>) hit.get("_source");
-                if (src == null) continue;
-                String url = (String) src.get("url");
-                if (url == null) continue;
-                if (seen.contains(url)) continue;
+    private List<SearchResultDto> searchResults(JsonNode hits) {
+        Set<String> seen = new HashSet<>();
+        List<SearchResultDto> articles = new ArrayList<>();
+        List<SearchResultDto> others = new ArrayList<>();
 
-                // Skip homepages and prioritize articles
-                if (isHomepage(url)) {
+        for (JsonNode hit : hits) {
+            String url = hit.path("_source").path("url").asText("");
+            String path;
+            try {
+                URI uri = URI.create(url);
+                if (!"http".equalsIgnoreCase(uri.getScheme()) && !"https".equalsIgnoreCase(uri.getScheme())) {
                     continue;
                 }
-
-                String snippet = extractSnippet(hit);
-                SearchResultDto dto = new SearchResultDto(url, snippet);
-
-                if (isLikelyArticle(url)) {
-                    articleCandidates.add(dto);
-                } else {
-                    others.add(dto);
-                }
-                seen.add(url);
+                path = uri.getRawPath();
+            } catch (IllegalArgumentException e) {
+                continue;
             }
+            if (path == null || path.isBlank() || path.equals("/") || !seen.add(url)) continue;
 
-            results.addAll(articleCandidates);
-            for (SearchResultDto dto : others) {
-                if (results.size() >= 50) break;
-                results.add(dto);
-            }
-        } catch (Exception e) {
-            logger.warn("Elasticsearch lookup failed due to network or timeout issues ({}). Triggering Redis fallback.", e.getMessage());
-            return performFallbackRedisSearch(query);
+            JsonNode highlight = hit.path("highlight");
+            String snippet = highlight.path("title").path(0)
+                    .asText(highlight.path("content").path(0).asText(""));
+            SearchResultDto dto = new SearchResultDto(url, snippet);
+            (isLikelyArticle(url, path) ? articles : others).add(dto);
         }
-        return results;
+        return Stream.concat(articles.stream(), others.stream()).limit(50).toList();
     }
 
-    /**
-     * Searches recent crawl content stored in Redis, highlights matches,
-     * and deduplicates results by URL.
-     */
-    private List<SearchResultDto> performFallbackRedisSearch(String query) {
-        List<SearchResultDto> fallbackResults = new ArrayList<>();
-        try {
-            logger.info("Initializing Redis fallback search for query: {}", query);
-
-            // 1. Find all active crawl statuses to identify active/recent crawls
-            Set<String> keys = redisTemplate.keys("*.data");
-            if (keys == null || keys.isEmpty()) {
-                logger.warn("No crawled data found in Redis fallback DB.");
-                return fallbackResults;
-            }
-
-            String lowerQuery = query.toLowerCase(Locale.ROOT);
-            List<SearchResultDto> rawResults = new ArrayList<>();
-
-            // 2. Scan available crawl hashes in Redis and search content inside
-            for (String dataKey : keys) {
-                Map<Object, Object> crawledPages = redisTemplate.opsForHash().entries(dataKey);
-                for (Map.Entry<Object, Object> entry : crawledPages.entrySet()) {
-                    String url = (String) entry.getKey();
-                    String content = (String) entry.getValue();
-
-                    if (url == null || content == null) continue;
-                    if (isHomepage(url)) continue;
-
-                    String lowerContent = content.toLowerCase(Locale.ROOT);
-                    if (lowerContent.contains(lowerQuery)) {
-                        String snippet = buildFallbackSnippet(content, lowerQuery);
-                        rawResults.add(new SearchResultDto(url, snippet));
-                    }
-                }
-            }
-
-            // 3. Deduplicate results by URL to prevent showing duplicates from different crawl runs
-            Map<String, SearchResultDto> uniqueMap = new LinkedHashMap<>();
-            for (SearchResultDto dto : rawResults) {
-                if (dto.getUrl() != null) {
-                    // keeps the first occurrence, maintaining insertion order of keys
-                    uniqueMap.putIfAbsent(dto.getUrl(), dto);
-                }
-            }
-
-            fallbackResults.addAll(uniqueMap.values());
-            logger.info("Redis fallback search completed. Found {} unique matching pages (raw hits containing query: {}).", fallbackResults.size(), rawResults.size());
-        } catch (Exception ex) {
-            logger.error("Severe fallback error searching Redis data: {}", ex.getMessage(), ex);
-        }
-        return fallbackResults;
-    }
-
-    private String buildFallbackSnippet(String content, String query) {
-        int index = content.toLowerCase(Locale.ROOT).indexOf(query);
-        if (index == -1) return content.substring(0, Math.min(content.length(), 150)) + "...";
-
-        int start = Math.max(0, index - 60);
-        int end = Math.min(content.length(), index + query.length() + 80);
-
-        String rawSnippet = content.substring(start, end);
-        String matchedPart = content.substring(index, index + query.length());
-
-        // Add exact simulated HTML em tag highlighting just like Elasticsearch outputs
-        return "..." + rawSnippet.replace(matchedPart, "<em>" + matchedPart + "</em>") + "...";
-    }
-
-    private boolean isHomepage(String url) {
-        try {
-            java.net.URL u = new java.net.URL(url);
-            String path = u.getPath();
-            if (path == null) return true;
-            path = path.trim();
-            if (path.equals("") || path.equals("/")) return true;
-            return false;
-        } catch (Exception e) {
-            return true;
-        }
-    }
-
-    private boolean isLikelyArticle(String url) {
+    private boolean isLikelyArticle(String url, String path) {
         String lower = url.toLowerCase(Locale.ROOT);
         if (lower.contains("/article/") || lower.contains("/news/")) return true;
         if (lower.matches(".*\\b(docid|articleid|newsid|storyid|id)=\\d+.*")) return true;
         if (lower.matches(".*/\\d{4}/\\d{2}/\\d{2}/.*")) return true;
         if (lower.matches(".*/\\d{6,}.*")) return true;
-        try {
-            java.net.URL u = new java.net.URL(url);
-            String path = u.getPath();
-            if (path == null) return false;
-            String[] parts = path.split("/");
-            int count = 0;
-            for (String p : parts) if (!p.isEmpty()) count++;
-            return count >= 3;
-        } catch (Exception e) {
-            return false;
-        }
-    }
 
-    private String extractSnippet(Map<String, Object> hit) {
-        Map<String, Object> hl = (Map<String, Object>) hit.get("highlight");
-        if (hl != null) {
-            // Prefer highlighting from the title
-            Object titleHighlight = hl.get("title");
-            if (titleHighlight instanceof List && !((List) titleHighlight).isEmpty()) {
-                return (String) ((List) titleHighlight).get(0);
-            }
-            // Fallback to content highlighting
-            Object contentHighlight = hl.get("content");
-            if (contentHighlight instanceof List && !((List) contentHighlight).isEmpty()) {
-                return (String) ((List) contentHighlight).get(0);
-            }
+        int count = 0;
+        for (String part : path.split("/")) {
+            if (!part.isEmpty()) count++;
         }
-        return "";
-    }
-
-    private String escapeJson(String s) {
-        return s.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n");
+        return count >= 3;
     }
 }

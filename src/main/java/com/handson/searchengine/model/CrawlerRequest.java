@@ -1,10 +1,13 @@
 package com.handson.searchengine.model;
 
 public class CrawlerRequest {
+    public static final int DEFAULT_DEPTH = 2;
+    public static final int DEFAULT_URLS = 25;
+
     private String url;
-    private int maxDistance;
-    private int maxSeconds;
-    private int maxUrls;
+    private int maxDistance = DEFAULT_DEPTH;
+    private int maxSeconds = 60;
+    private int maxUrls = DEFAULT_URLS;
 
     public CrawlerRequest() {}
 

@@ -110,6 +110,52 @@ class CrawlStateStoreTest {
     }
 
     @Test
+    void skippedPageUsesOneSlotAndLeavesOtherWorkRunning() {
+        CrawlerRecord failed = CrawlerRecord.of(root).withUrl("https://example.com/failed").withIncDistance();
+        CrawlerRecord sibling = CrawlerRecord.of(root).withUrl("https://example.com/sibling").withIncDistance();
+        assertTrue(store.queue(root));
+        assertTrue(store.queue(failed));
+        assertTrue(store.queue(sibling));
+
+        assertTrue(store.claim(root));
+        store.finish(root);
+        assertTrue(store.claim(failed));
+        store.skip(failed);
+        store.skip(failed);
+        assertNull(store.status(root.getCrawlId()).getStopReason());
+        assertEquals(1, store.status(root.getCrawlId()).getNumPages());
+
+        assertTrue(store.claim(sibling));
+        store.finish(sibling);
+        assertEquals(2, store.status(root.getCrawlId()).getNumPages());
+        assertEquals(StopReason.maxUrls, store.status(root.getCrawlId()).getStopReason());
+    }
+
+    @Test
+    void concurrentStartsShareOneExpiringBudget() throws Exception {
+        String key = root.getCrawlId() + ":admission";
+        CrawlStateStore other = new CrawlStateStore(redis);
+        ExecutorService workers = Executors.newFixedThreadPool(8);
+        try {
+            List<Callable<Boolean>> attempts = new ArrayList<>();
+            for (int i = 0; i < 12; i++) {
+                attempts.add(() -> store.admit(key));
+                attempts.add(() -> other.admit(key));
+            }
+            int accepted = 0;
+            for (Future<Boolean> result : workers.invokeAll(attempts)) {
+                if (result.get()) accepted++;
+            }
+            assertEquals(6, accepted);
+            long seconds = redis.getExpire(key);
+            assertTrue(seconds > 0 && seconds <= 60);
+        } finally {
+            workers.shutdownNow();
+            redis.delete(key);
+        }
+    }
+
+    @Test
     void depthLimitProducesATerminalReasonAfterWorkFinishes() {
         store.queue(root);
         store.claim(root);
